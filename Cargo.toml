@@ -32,7 +32,7 @@ quietwire-route = { path = "crates/quietwire-route" }
 quietwire-store = { path = "crates/quietwire-store" }
 quietwire-transport = { path = "crates/quietwire-transport" }
 quietwire-core = { path = "crates/quietwire-core" }
-uniffi = "=0.28.3"
+uniffi = "=0.32.1"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
