@@ -9,7 +9,7 @@ repository:
   name: quietwire
   description: Infrastructure-free, end-to-end encrypted, delay-tolerant mesh messenger
   homepage: https://github.com/janpenitent/quietwire
-  private: true
+  private: false
   default_branch: main
   has_issues: true
   has_projects: false
