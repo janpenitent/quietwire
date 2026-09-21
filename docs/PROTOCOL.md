@@ -160,7 +160,13 @@ On devices with hardware key storage (Android StrongBox, iOS Secure Enclave, TPM
 
 **This is off by default and must stay off by default**, because the brief this system was built to says the password is required both to read and to send, and a fingerprint is not a password. When a user turns it on, the constraint is explicit: the password is still required for the first unlock after every boot, after every wipe-counter increment, and after any 24-hour period without one. Biometrics shorten a session; they never open one from cold. Hardware sealing is **optional and additive** — the password alone is always sufficient.
 
-All key material lives in `zeroize::Zeroizing` buffers and is `mlock`ed where the OS permits.
+The byte-level construction is fixed by ADR-0014:
+
+- **Subkeys**: `HKDF-SHA512(ikm = DEK, salt = empty, info = "QUIETWIRE-DEK-v1" ‖ label, L = 32)`, with the labels shown in the diagram.
+- **Wrapped DEK**: XChaCha20-Poly1305 under the KEK, AAD `"QUIETWIRE-DEK-WRAP-v1"`, stored as 72 bytes: `nonce (24) ‖ ciphertext (32) ‖ tag (16)`. Changing the password rewraps the DEK; the data is not re-encrypted.
+- **KEK**: Argon2id v1.3 with no secret and no associated data; only the two profiles above can be constructed.
+
+Every long-lived symmetric key sits alone at the start of its own 16 KiB-aligned allocation, wiped on drop. That allocation is `mlock`ed when the OS page size divides 16 KiB and the lock limit allows it; on larger pages it stays unlocked rather than lock unrelated heap data, and the implementation reports which case applies.
 
 ---
 

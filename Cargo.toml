@@ -33,6 +33,17 @@ quietwire-store = { path = "crates/quietwire-store" }
 quietwire-transport = { path = "crates/quietwire-transport" }
 quietwire-core = { path = "crates/quietwire-core" }
 uniffi = "=0.28.3"
+argon2 = { version = "=0.6.0", default-features = false, features = ["alloc", "zeroize"] }
+blake3 = { version = "=1.8.7", default-features = false, features = ["std", "zeroize"] }
+chacha20poly1305 = { version = "=0.11.0", default-features = false, features = ["alloc", "zeroize"] }
+getrandom = "=0.4.3"
+hkdf = "=0.13.0"
+region = "=4.0.0"
+sha2 = { version = "=0.11.0", default-features = false, features = ["zeroize"] }
+subtle = "=2.6.1"
+zeroize = "=1.9.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

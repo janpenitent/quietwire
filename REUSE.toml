@@ -18,3 +18,23 @@ SPDX-License-Identifier = "CC0-1.0"
 path = "vet/imports.lock"
 SPDX-FileCopyrightText = "The publishers of the audit sets imported in vet/config.toml"
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/wycheproof/*.json"
+SPDX-FileCopyrightText = "Google LLC and the Wycheproof contributors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/blake3/*.json"
+SPDX-FileCopyrightText = "Jack O'Connor and Samuel Neves"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/rfc9106/*.json"
+SPDX-FileCopyrightText = "2021 IETF Trust and the persons identified as the document authors"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/derived/*.json"
+SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
+SPDX-License-Identifier = "CC0-1.0"
