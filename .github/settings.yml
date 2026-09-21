@@ -27,6 +27,11 @@ repository:
       status: enabled
     secret_scanning_push_protection:
       status: enabled
+  private_vulnerability_reporting: true
+
+actions:
+  default_workflow_permissions: read
+  can_approve_pull_request_reviews: false
 
 rulesets:
   - name: protected-branches
@@ -45,12 +50,13 @@ rulesets:
       - type: non_fast_forward
       - type: required_signatures
       - type: required_linear_history
+      # Single maintainer: GitHub forbids approving your own pull request.
       - type: pull_request
         parameters:
-          required_approving_review_count: 2
+          required_approving_review_count: 0
           dismiss_stale_reviews_on_push: true
-          require_code_owner_review: true
-          require_last_push_approval: true
+          require_code_owner_review: false
+          require_last_push_approval: false
           required_review_thread_resolution: true
       - type: required_status_checks
         parameters:

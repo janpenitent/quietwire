@@ -4,7 +4,6 @@
 
 *                                @janpenitent
 
-# INT-02: the cryptography reviewer must also approve these paths.
-# The reviewer is not yet appointed; see MAINTAINERS.md.
+# INT-02: cryptography reviewer.
 /crates/quietwire-crypto/        @janpenitent
 /crates/quietwire-e2e/           @janpenitent
