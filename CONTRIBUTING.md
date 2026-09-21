@@ -87,6 +87,10 @@ cargo vet --locked
 reuse lint
 ```
 
+Use the `cargo-vet` version CI pins in `.github/workflows/ci.yml`
+(`cargo install cargo-vet --version 0.10.2 --locked`): the layout of `vet/`
+changes between versions, and `--locked` rejects a store formatted by another.
+
 Every new file needs an SPDX header (`reuse annotate`). Code is Apache-2.0,
 specifications and documentation CC-BY-4.0, test vectors and corpora CC0-1.0.
 

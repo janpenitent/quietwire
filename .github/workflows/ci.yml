@@ -26,7 +26,7 @@ jobs:
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2.87.17
         with:
-          tool: cargo-deny,cargo-audit,cargo-vet
+          tool: cargo-deny,cargo-audit,cargo-vet@0.10.2
       - run: cargo deny check
       - run: cargo audit
       - run: cargo vet --locked
