@@ -1,0 +1,66 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: settings-drift
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/settings.yml
+      - .github/workflows/settings-drift.yml
+      - tools/ci/settings_drift.py
+      - tools/ci/settings-drift-requirements.txt
+  pull_request:
+    paths:
+      - .github/settings.yml
+      - .github/workflows/settings-drift.yml
+      - tools/ci/settings_drift.py
+      - tools/ci/test_settings_drift.py
+      - tools/ci/settings-drift-requirements.txt
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    name: settings-drift-selftest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install dependencies
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/venv"
+          "${RUNNER_TEMP}/venv/bin/pip" install --require-hashes -r tools/ci/settings-drift-requirements.txt
+      - name: Unit tests
+        working-directory: tools/ci
+        run: '"${RUNNER_TEMP}/venv/bin/python" -m unittest -v test_settings_drift'
+
+  drift:
+    name: settings-drift
+    if: github.event_name != 'pull_request'
+    needs: selftest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # GITHUB_TOKEN cannot read the admin-only settings endpoints.
+      - name: Require read token
+        env:
+          SETTINGS_READ_TOKEN: ${{ secrets.SETTINGS_READ_TOKEN }}
+        run: |
+          if [ -z "${SETTINGS_READ_TOKEN}" ]; then
+            echo "::error::SETTINGS_READ_TOKEN secret is not set"
+            exit 1
+          fi
+      - name: Install dependencies
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/venv"
+          "${RUNNER_TEMP}/venv/bin/pip" install --require-hashes -r tools/ci/settings-drift-requirements.txt
+      - name: Compare settings.yml with the live repository
+        env:
+          GH_TOKEN: ${{ secrets.SETTINGS_READ_TOKEN }}
+        run: '"${RUNNER_TEMP}/venv/bin/python" tools/ci/settings_drift.py'

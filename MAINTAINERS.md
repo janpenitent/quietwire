@@ -6,23 +6,23 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # Maintainers
 
-| Role | Person | GitHub | Signing key | Custody |
-|---|---|---|---|---|
-| Maintainer (release authority) | Janier Rodríguez <jrodriguez@virtualcable.es> | @janpenitent | OpenPGP RSA-4096 `DAB7 4123 0EEE 188D 64AA  7602 6157 60F8 085A C27C` | Software key on the maintainer's workstation |
-| Second maintainer (backup signing key) | *vacant* | | | |
-| Cryptography reviewer (`INT-02`) | *vacant* | | | |
+QUIETWIRE is a single-maintainer project. One person holds every role.
 
-Security-relevant decisions require both maintainers. Until the second
-maintainer is appointed, no release may be tagged.
+| Role | Person | GitHub |
+|---|---|---|
+| Maintainer (release authority) | Janier Rodríguez <jrodriguez@virtualcable.es> | @janpenitent |
+| Cryptography reviewer (`INT-02`) | Janier Rodríguez <jrodriguez@virtualcable.es> | @janpenitent |
 
-## Open items before the first release
+## Signing key
 
-- **Hardware-backed signing key.** The current key is stored on disk. It must be
-  replaced by an OpenPGP subkey on a hardware token, or a FIDO2 SSH key, before
-  any release tag is signed.
-- **Employer authorisation.** Commits are authored and signed off with the
-  address `jrodriguez@virtualcable.es`. A written statement from Virtual Cable
-  S.L.U. confirming that this contribution is authorised under Apache-2.0 must be
-  recorded in this file, or the commit identity moved to a personal address.
-- **Second maintainer** with a backup signing key in separate physical custody.
-- **Cryptography reviewer** named in `CODEOWNERS`.
+Commits and release tags are signed with the OpenPGP key
+`DAB7 4123 0EEE 188D 64AA  7602 6157 60F8 085A C27C`, published at
+<https://github.com/janpenitent.gpg>. There is no backup signing key.
+
+## Review
+
+A pull request author cannot approve their own pull request on GitHub, so the
+protected-branch ruleset requires zero approvals. Every change still goes
+through a pull request and must pass the required status checks, carry signed
+and signed-off commits, and keep a linear history. The cryptography paths in
+`CODEOWNERS` are reviewed by the maintainer in the pull request itself.
