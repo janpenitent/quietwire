@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# cargo-mutants tests one package at a time; a package without tests yet must
+# not fail the baseline, matching the CI nextest job.
+additional_cargo_test_args = ["--no-tests=pass"]
+
+# The uniffi-bindgen entry point only calls into uniffi; nothing to test.
+exclude_globs = ["crates/quietwire-ffi/src/bin/uniffi-bindgen.rs"]
