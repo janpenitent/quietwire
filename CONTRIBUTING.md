@@ -68,8 +68,10 @@ disabled because GitHub does not sign rebased commits.
 
 ## Review expectations
 
-- Two approving reviews. Changes under `crates/quietwire-crypto/` and
-  `crates/quietwire-e2e/` also need the cryptography reviewer (`CODEOWNERS`).
+- The project has a single maintainer, so pull requests need no approving
+  review (`MAINTAINERS.md`, ADR-0013). They still need every required status
+  check, and the maintainer reviews changes under `crates/quietwire-crypto/`
+  and `crates/quietwire-e2e/` as the cryptography reviewer (`CODEOWNERS`).
 - Every change states which tests (`QW-<LEVEL>-<AREA>-<NNN>`) cover it.
 - A change that weakens a security property needs a published ADR in
   `docs/adr/` and a 30-day comment period before it can merge.
@@ -81,11 +83,27 @@ cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo nextest run --workspace
 cargo deny check
+cargo vet --locked
 reuse lint
 ```
 
+Use the `cargo-vet` version CI pins in `.github/workflows/ci.yml`
+(`cargo install cargo-vet --version 0.10.2 --locked`): the layout of `vet/`
+changes between versions, and `--locked` rejects a store formatted by another.
+
 Every new file needs an SPDX header (`reuse annotate`). Code is Apache-2.0,
 specifications and documentation CC-BY-4.0, test vectors and corpora CC0-1.0.
+
+## Secret scanning
+
+CI (`secret-scan`) runs [gitleaks](https://github.com/gitleaks/gitleaks) with
+`.gitleaks.toml` over the whole history. Key material belongs only in
+`tests/fixtures/`, and only if it is test-only. Catch it before it is committed
+by installing gitleaks and enabling the repository hooks:
+
+```bash
+git config core.hooksPath tools/hooks
+```
 
 ## Security issues
 

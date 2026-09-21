@@ -8,3 +8,13 @@ version = 1
 path = ["Cargo.lock", "flake.lock", "NOTICE", "docs/AUDIT/.gitkeep"]
 SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["vet/config.toml", "vet/audits.toml"]
+SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "vet/imports.lock"
+SPDX-FileCopyrightText = "The publishers of the audit sets imported in vet/config.toml"
+SPDX-License-Identifier = "Apache-2.0"
