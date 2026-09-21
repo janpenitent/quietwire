@@ -8,13 +8,16 @@
 //! libraries directly (ADR-0014). Everything else goes through the types here.
 
 pub mod aead;
+pub mod ed25519;
 mod error;
 pub mod hash;
 pub mod hierarchy;
 pub mod kdf;
+pub mod mlkem;
 pub mod password;
 mod rng;
 mod secret;
+pub mod x25519;
 
 pub use error::Error;
 pub use secret::SecretKey;

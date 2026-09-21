@@ -16,7 +16,7 @@ The primitive set must be standard, constant-time, safe on cheap ARM without AES
 
 ## Decision
 
-Argon2id (m=256 MiB, t=4, p=2; desktop m=1 GiB) for passwords; XChaCha20-Poly1305 (`chacha20poly1305`) for AEAD; Ed25519 (`ed25519-dalek` v2) for signatures; X25519 + ML-KEM-768 (`x25519-dalek`, `ml-kem`) for key agreement; BLAKE3 for hashing and HKDF-SHA512 for key derivation.
+Argon2id (m=256 MiB, t=4, p=2; desktop m=1 GiB) for passwords; XChaCha20-Poly1305 (`chacha20poly1305`) for AEAD; Ed25519 (`ed25519-dalek` v3, see ADR-0016) for signatures; X25519 + ML-KEM-768 (`x25519-dalek`, `ml-kem`) for key agreement; BLAKE3 for hashing and HKDF-SHA512 for key derivation.
 
 ## Consequences
 

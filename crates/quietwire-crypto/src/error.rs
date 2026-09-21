@@ -18,6 +18,10 @@ pub enum Error {
     Rng,
     /// The password KDF rejected its parameters or could not allocate its memory.
     Kdf,
+    /// A peer public key was malformed, or would force a predictable shared secret.
+    InvalidPublicKey,
+    /// A signature did not verify under the given key and message.
+    InvalidSignature,
 }
 
 impl fmt::Display for Error {
@@ -27,6 +31,8 @@ impl fmt::Display for Error {
             Self::Authentication => "authentication failed",
             Self::Rng => "random number generator unavailable",
             Self::Kdf => "password key derivation failed",
+            Self::InvalidPublicKey => "invalid public key",
+            Self::InvalidSignature => "invalid signature",
         })
     }
 }
@@ -44,6 +50,8 @@ mod tests {
             Error::Authentication,
             Error::Rng,
             Error::Kdf,
+            Error::InvalidPublicKey,
+            Error::InvalidSignature,
         ]
         .map(|error| error.to_string());
 

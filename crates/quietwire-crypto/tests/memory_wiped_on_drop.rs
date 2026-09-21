@@ -12,10 +12,12 @@
 
 use quietwire_crypto::{
     aead::{open, seal, Nonce},
+    ed25519::SigningKey,
     hierarchy::{Dek, Kek, Purpose},
-    SecretKey,
+    mlkem, x25519, SecretKey,
 };
 use quietwire_crypto_memtest::ScanningAllocator;
+use sha2::{Digest, Sha512};
 
 #[global_allocator]
 static ALLOCATOR: ScanningAllocator = ScanningAllocator::new();
@@ -71,4 +73,58 @@ fn sealing_and_opening_leaves_no_copy_of_the_plaintext_behind() {
     drop(open(&key, &nonce, b"", &sealed).unwrap());
 
     assert_eq!(watch.unwiped_frees(), 0);
+}
+
+#[test]
+fn x25519_leaves_no_copy_of_the_private_key_or_the_shared_secret_behind() {
+    let private_bytes = random_bytes();
+    let peer = x25519::PrivateKey::generate().unwrap().public_key();
+    let private_watch = ALLOCATOR.watch_bytes(&private_bytes).unwrap();
+
+    let private = x25519::PrivateKey::from(SecretKey::from_slice(&private_bytes).unwrap());
+    let _ = private.public_key();
+    let shared = private.diffie_hellman(&peer).unwrap();
+    let shared_watch = ALLOCATOR.watch_bytes(shared.expose_secret()).unwrap();
+    drop(shared);
+    drop(private);
+
+    assert_eq!(private_watch.unwiped_frees(), 0);
+    assert_eq!(shared_watch.unwiped_frees(), 0);
+}
+
+#[test]
+fn signing_leaves_no_copy_of_the_seed_or_its_nonce_prefix_behind() {
+    let seed = random_bytes();
+    let prefix = Sha512::digest(seed)[32..].to_vec();
+    let seed_watch = ALLOCATOR.watch_bytes(&seed).unwrap();
+    let prefix_watch = ALLOCATOR.watch_bytes(&prefix).unwrap();
+
+    let key = SigningKey::from(SecretKey::from_slice(&seed).unwrap());
+    let _ = key.verifying_key();
+    let _ = key.sign(b"memory hygiene");
+    drop(key);
+
+    assert_eq!(seed_watch.unwiped_frees(), 0);
+    assert_eq!(prefix_watch.unwiped_frees(), 0);
+}
+
+#[test]
+fn ml_kem_leaves_no_copy_of_the_seed_or_the_shared_key_behind() {
+    let (d, z) = (random_bytes(), random_bytes());
+    let d_watch = ALLOCATOR.watch_bytes(&d).unwrap();
+    let z_watch = ALLOCATOR.watch_bytes(&z).unwrap();
+
+    let key = mlkem::DecapsulationKey::from_seed(
+        SecretKey::from_slice(&d).unwrap(),
+        SecretKey::from_slice(&z).unwrap(),
+    );
+    let (ciphertext, sent) = key.encapsulation_key().encapsulate().unwrap();
+    let shared_watch = ALLOCATOR.watch_bytes(sent.expose_secret()).unwrap();
+    drop(key.decapsulate(&ciphertext));
+    drop(sent);
+    drop(key);
+
+    assert_eq!(d_watch.unwiped_frees(), 0);
+    assert_eq!(z_watch.unwiped_frees(), 0);
+    assert_eq!(shared_watch.unwiped_frees(), 0);
 }

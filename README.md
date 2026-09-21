@@ -124,7 +124,7 @@ This is not a weakness. It is the correct design for a network with no infrastru
 | Local database | **SQLite 3 via `rusqlite`, with SQLCipher page encryption + per-field XChaCha20-Poly1305** | Two independent layers; even the schema and indices leak nothing | Plain SQLite (leaks), Realm (proprietary), flat files (no queries) |
 | Password KDF | **Argon2id**, m=256 MiB, t=4, p=2 (desktop m=1 GiB) | OWASP-recommended, memory-hard, GPU/ASIC resistant | PBKDF2, bcrypt, scrypt (all weaker here) |
 | Symmetric AEAD | **XChaCha20-Poly1305** (`chacha20poly1305` crate) | 192-bit nonce means random nonces are safe forever; fast without AES-NI (critical on cheap ARM) | AES-GCM (nonce reuse is catastrophic, needs hardware) |
-| Signatures | **Ed25519** (`ed25519-dalek` v2) | Fast, small, deterministic, no nonce risk | ECDSA (nonce fragility) |
+| Signatures | **Ed25519** (`ed25519-dalek` v3) | Fast, small, deterministic, no nonce risk | ECDSA (nonce fragility) |
 | Key agreement | **X25519 + ML-KEM-768 hybrid** (`x25519-dalek` + `ml-kem`) | Classical security today, harvest-now-decrypt-later resistance tomorrow | X25519 alone |
 | Hash / KDF | **BLAKE3** + **HKDF-SHA512** | BLAKE3 for speed and tree hashing; HKDF-SHA512 for standardized key derivation | SHA-1, MD5 (obviously) |
 | Erasure coding for QR/sneakernet | **RaptorQ** (`raptorq` crate, RFC 6330) | Fountain code: a scanner recovers the payload from any sufficient subset of frames, no frame ordering needed | Static QR chunking (fails on a single missed frame) |
@@ -1181,7 +1181,7 @@ Every test carries a stable identifier `QW-<LEVEL>-<AREA>-<NNN>` so it can be re
 | `QW-U-CRY-006` | HKDF-SHA512 | RFC 5869 |
 | `QW-U-CRY-007` | BLAKE3 and BLAKE3-keyed | official `test_vectors.json`, all 35 input lengths |
 | `QW-U-CRY-008` | Argon2id | RFC 9106 §5.3 |
-| `QW-U-CRY-009` | ML-KEM-768 keygen/encaps/decaps | NIST FIPS 203 ACVP vectors, all 100 |
+| `QW-U-CRY-009` | ML-KEM-768 keygen/encaps/decaps | NIST FIPS 203 ACVP vectors: the 70 ML-KEM-768 keyGen, encapsulation, decapsulation and encapsulationKeyCheck cases (decapsulationKeyCheck does not apply, ADR-0016) |
 | `QW-U-CRY-010` | ML-KEM-768 decapsulation of malformed ciphertext returns implicit-reject, never an error | FIPS 203 §7.3 |
 | `QW-U-E2E-011` | X3DH agreement | Signal spec vectors, extended with our PQ leg |
 | `QW-U-E2E-012` | Double Ratchet message sequence | Signal spec vectors |
