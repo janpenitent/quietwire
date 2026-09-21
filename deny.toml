@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # QW-C-SYS-343. Duplicate versions are denied workspace-wide, a strict
-# superset of the crypto-only rule, until a non-crypto exemption is needed.
+# superset of the crypto-only rule; every exemption below is build-time only.
 
 [graph]
 all-features = true
@@ -12,6 +12,10 @@ all-features = true
 version = 2
 yanked = "deny"
 unmaintained = "all"
+ignore = [
+    { id = "RUSTSEC-2025-0141", reason = "bincode 1 is a proc-macro dependency of uniffi_macros 0.28 (ADR-0002); not in the runtime graph" },
+    { id = "RUSTSEC-2024-0436", reason = "paste is a proc-macro dependency of uniffi_bindgen 0.28 (ADR-0002); not in the runtime graph" },
+]
 
 [licenses]
 version = 2
@@ -32,6 +36,10 @@ allow = [
 [bans]
 multiple-versions = "deny"
 wildcards = "deny"
+allow-wildcard-paths = true
+skip = [
+    { crate = "syn@2", reason = "askama_derive via uniffi_bindgen 0.28 (ADR-0002) lags serde_derive on syn 3; proc-macro only" },
+]
 deny = [
     { crate = "openssl", reason = "Crypto comes from audited RustCrypto and dalek crates only" },
     { crate = "openssl-sys", reason = "Crypto comes from audited RustCrypto and dalek crates only" },
