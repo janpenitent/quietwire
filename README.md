@@ -330,7 +330,7 @@ On devices with hardware key storage (Android StrongBox, iOS Secure Enclave, TPM
 
 **This is off by default and must stay off by default**, because the brief this system was built to says the password is required both to read and to send, and a fingerprint is not a password. When a user turns it on, the constraint is explicit: the password is still required for the first unlock after every boot, after every wipe-counter increment, and after any 24-hour period without one. Biometrics shorten a session; they never open one from cold. Hardware sealing is **optional and additive** — the password alone is always sufficient.
 
-All key material lives in `zeroize::Zeroizing` buffers and is `mlock`ed where the OS permits.
+Every long-lived key sits alone on its own 16 KiB-aligned allocation, `mlock`ed where the OS permits and wiped on drop (ADR-0014); transient key material lives in `zeroize::Zeroizing` buffers. `QW-U-CRY-050` checks that nothing secret survives in freed memory.
 
 ---
 
@@ -1001,7 +1001,7 @@ Then apply the repository settings and rulesets in §19.8, commit `.github/setti
 
 ### Phase 1 — Cryptographic core (weeks 3–8)
 
-1. `quietwire-crypto`: key hierarchy, Argon2id parameters, HKDF labels, `Zeroizing` wrappers, `mlock`.
+1. `quietwire-crypto`: key hierarchy, Argon2id parameters, HKDF labels, locked and wiped key pages, `Zeroizing` for transient buffers.
 2. `quietwire-e2e`: hybrid X3DH, then the Double Ratchet.
 3. Implement **every** test vector from the Signal specification. Add ML-KEM-768 vectors from NIST FIPS 203.
 4. `cargo fuzz` targets for: cell parsing, ratchet header parsing, X3DH bundle parsing, GCS decoding. Run each for 24 hours minimum.

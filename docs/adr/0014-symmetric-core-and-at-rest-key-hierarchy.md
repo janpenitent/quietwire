@@ -58,9 +58,8 @@ vector sources that do not cover the construction used.
 Changing a label, the AAD, the wrapped layout or an Argon2id profile makes
 existing databases unreadable, so each is a storage-format change under §19.2.
 
-Wiping on drop is not covered by mutation testing yet: observing it needs the
-custom test allocator of `QW-U-CRY-050`, and `.cargo/mutants.toml` excludes
-that one mutant until it exists.
+Wiping on drop is checked by `QW-U-CRY-050`, which reads freed memory back
+through the test allocator of ADR-0015.
 
 ## Rejected alternatives
 
