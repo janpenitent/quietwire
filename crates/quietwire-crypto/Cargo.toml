@@ -14,3 +14,18 @@ publish.workspace = true
 
 [lints]
 workspace = true
+
+[dependencies]
+argon2.workspace = true
+blake3.workspace = true
+chacha20poly1305.workspace = true
+getrandom.workspace = true
+hkdf.workspace = true
+region.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+serde.workspace = true
+serde_json.workspace = true

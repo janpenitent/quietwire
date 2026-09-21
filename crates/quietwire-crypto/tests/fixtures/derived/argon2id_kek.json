@@ -1,0 +1,26 @@
+[
+  {
+    "password": "636f727265637420686f727365206261747465727920737461706c65",
+    "salt": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "memory_kib": 256,
+    "iterations": 4,
+    "parallelism": 2,
+    "tag": "3789b592ef38cfb9baeeb367648a38bdb036560938a695a9e815d57c37765e8c"
+  },
+  {
+    "password": "",
+    "salt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "memory_kib": 64,
+    "iterations": 1,
+    "parallelism": 1,
+    "tag": "493c0670ec4cd30974dea5d419677d30f1a2a9f8e6758783131aa3ef5e1d411a"
+  },
+  {
+    "password": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+    "salt": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+    "memory_kib": 512,
+    "iterations": 3,
+    "parallelism": 4,
+    "tag": "20429d4fbe7775bd326b2fc065f42bfd766738bd5ba3ad5278dba727a3a0e2fb"
+  }
+]
