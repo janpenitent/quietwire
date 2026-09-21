@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[project]
+name = "quietwire-sim"
+version = "0.0.0"
+description = "ONE-style network simulator for QUIETWIRE routing experiments"
+requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

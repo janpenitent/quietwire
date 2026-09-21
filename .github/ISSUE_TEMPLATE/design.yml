@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Design change
+description: Propose a change to the protocol, architecture or a recorded decision. Not for vulnerabilities — see SECURITY.md.
+labels: [design]
+body:
+  - type: markdown
+    attributes:
+      value: "**Security vulnerabilities must not be reported here.** A change that weakens a security property needs an ADR and a 30-day comment period."
+  - type: input
+    id: sections
+    attributes:
+      label: Affected plan sections or ADRs
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal and rejected alternatives
+    validations:
+      required: true
+  - type: dropdown
+    id: security
+    attributes:
+      label: Does this weaken any security property?
+      options: ["No", "Yes", "Unsure"]
+    validations:
+      required: true

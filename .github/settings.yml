@@ -1,0 +1,84 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# §19.8 repository configuration, in the format of the repository-settings
+# app. Drift between this file and the live repository fails QW-C-SYS-350.
+
+repository:
+  name: quietwire
+  description: Infrastructure-free, end-to-end encrypted, delay-tolerant mesh messenger
+  homepage: https://github.com/janpenitent/quietwire
+  private: false
+  default_branch: main
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_discussions: true
+  allow_squash_merge: true
+  allow_merge_commit: true
+  allow_rebase_merge: false
+  allow_auto_merge: false
+  delete_branch_on_merge: true
+  enable_vulnerability_alerts: true
+  enable_automated_security_fixes: true
+  security_and_analysis:
+    secret_scanning:
+      status: enabled
+    secret_scanning_push_protection:
+      status: enabled
+
+rulesets:
+  - name: protected-branches
+    target: branch
+    enforcement: active
+    bypass_actors: []
+    conditions:
+      ref_name:
+        include: ["~DEFAULT_BRANCH", "refs/heads/release/*"]
+        exclude: []
+    rules:
+      - type: deletion
+      - type: non_fast_forward
+      - type: required_signatures
+      - type: required_linear_history
+      - type: merge_queue
+        parameters:
+          merge_method: SQUASH
+          grouping_strategy: ALLGREEN
+          max_entries_to_build: 5
+          min_entries_to_merge: 1
+          max_entries_to_merge: 5
+          min_entries_to_merge_wait_minutes: 5
+          check_response_timeout_minutes: 60
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 2
+          dismiss_stale_reviews_on_push: true
+          require_code_owner_review: true
+          require_last_push_approval: true
+          required_review_thread_resolution: true
+      - type: required_status_checks
+        parameters:
+          strict_required_status_checks_policy: true
+          required_status_checks:
+            - context: "fmt · clippy · deny · audit"
+            - context: nextest
+            - context: signature-walk
+            - context: dco-check
+            - context: repository-url
+            - context: reuse-lint
+
+  - name: signed-release-tags
+    target: tag
+    enforcement: active
+    bypass_actors: []
+    conditions:
+      ref_name:
+        include: ["refs/tags/v*"]
+        exclude: []
+    rules:
+      - type: deletion
+      - type: non_fast_forward
+      - type: update
+      - type: required_signatures

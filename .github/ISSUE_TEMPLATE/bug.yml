@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bug report
+description: Something behaves differently from the specification. Not for vulnerabilities — see SECURITY.md.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "**Security vulnerabilities must not be reported here.** Use private vulnerability reporting as described in SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and transport
+      placeholder: Android 15, BLE
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour, with the specification section
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour and steps to reproduce
+    validations:
+      required: true

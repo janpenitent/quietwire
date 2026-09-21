@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true
+doc-valid-idents = ["LoRa", "RNode", "SQLCipher", "UniFFI", "BLAKE3", "XChaCha20", "ML-KEM-768", "..", ]

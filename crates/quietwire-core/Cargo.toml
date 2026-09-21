@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-core"
+description = "Application core: contacts, conversations, fragmentation, reassembly, delivery receipts and duress logic."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+quietwire-e2e.workspace = true
+quietwire-packet.workspace = true
+quietwire-route.workspace = true
+quietwire-store.workspace = true
+quietwire-transport.workspace = true

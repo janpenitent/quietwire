@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-packet"
+description = "Packet and privacy layer: fixed 512-byte cells, padding, cover traffic, random delay and replay cache."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+quietwire-crypto.workspace = true

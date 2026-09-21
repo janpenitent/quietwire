@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-crypto"
+description = "Primitives and key hierarchy: X25519, Ed25519, ML-KEM-768, XChaCha20-Poly1305, Argon2id, BLAKE3, zeroization and constant-time helpers."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true

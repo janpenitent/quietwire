@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-ffi"
+description = "UniFFI bindings for Kotlin, Swift and Python. The trust boundary: nothing above it holds a secret."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+quietwire-core.workspace = true
+uniffi = { workspace = true, features = ["cli"] }

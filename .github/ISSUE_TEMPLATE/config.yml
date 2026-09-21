@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability — do not open an issue
+    url: https://github.com/janpenitent/quietwire/security/advisories/new
+    about: Report vulnerabilities privately. See SECURITY.md.
+  - name: Design discussion
+    url: https://github.com/janpenitent/quietwire/discussions
+    about: Open-ended design debate belongs in Discussions.

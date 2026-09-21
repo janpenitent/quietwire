@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.repository == 'janpenitent/quietwire'
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: tools/ci/import-signing-keys.sh
+      - name: Refuse unsigned tags
+        run: |
+          git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          git verify-tag "${GITHUB_REF_NAME}" \
+            || { echo "::error::Tag ${GITHUB_REF_NAME} is not signed. Refusing."; exit 1; }
+      - run: tools/ci/verify-signatures.sh "${GITHUB_REF_NAME}"
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+      - run: nix build --print-build-logs
+      - run: sha256sum result/bin/*

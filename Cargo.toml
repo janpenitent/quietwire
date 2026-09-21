@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/quietwire-crypto",
+    "crates/quietwire-e2e",
+    "crates/quietwire-packet",
+    "crates/quietwire-route",
+    "crates/quietwire-store",
+    "crates/quietwire-transport",
+    "crates/quietwire-core",
+    "crates/quietwire-ffi",
+    "apps/node",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/janpenitent/quietwire"
+authors = ["Janier Rodríguez <jrodriguez@virtualcable.es>"]
+publish = false
+
+[workspace.dependencies]
+quietwire-crypto = { path = "crates/quietwire-crypto" }
+quietwire-e2e = { path = "crates/quietwire-e2e" }
+quietwire-packet = { path = "crates/quietwire-packet" }
+quietwire-route = { path = "crates/quietwire-route" }
+quietwire-store = { path = "crates/quietwire-store" }
+quietwire-transport = { path = "crates/quietwire-transport" }
+quietwire-core = { path = "crates/quietwire-core" }
+uniffi = "=0.28.3"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "deny"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+panic = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+strip = "symbols"

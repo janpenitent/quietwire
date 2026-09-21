@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+*                                @janpenitent
+
+# INT-02: the cryptography reviewer must also approve these paths.
+# The reviewer is not yet appointed; see MAINTAINERS.md.
+/crates/quietwire-crypto/        @janpenitent
+/crates/quietwire-e2e/           @janpenitent
