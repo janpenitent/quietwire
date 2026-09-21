@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# §17.12: no real key material in the repository. The default rules catch
+# known credential formats; the two entropy rules catch raw key bytes.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "high-entropy-base64"
+description = "High-entropy base64 blob outside tests/fixtures/"
+regex = '''[A-Za-z0-9+/_=-]{32,}'''
+entropy = 4.5
+
+[[rules]]
+id = "high-entropy-hex"
+description = "High-entropy hex blob outside tests/fixtures/"
+regex = '''\b[0-9a-fA-F]{64,}\b'''
+entropy = 3.5
+
+[[allowlists]]
+description = "Fixtures and files made of published checksums"
+paths = [
+    '''(^|/)tests/fixtures/''',
+    '''^Cargo\.lock$''',
+    '''^flake\.lock$''',
+    '''^vet/imports\.lock$''',
+    '''^tools/ci/[^/]*requirements\.txt$''',
+]
+
+[[allowlists]]
+description = "Values labelled as SHA-256 digests, such as pinned download checksums"
+regexTarget = "line"
+regexes = ['''(?i)sha256\w*["']?\s*[:=]''']

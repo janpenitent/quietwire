@@ -100,9 +100,28 @@ def repository_name() -> str:
 def fetch_live(repo: str) -> dict:
     return {
         "repository": _live_repository(repo),
-        "actions": gh("api", f"repos/{repo}/actions/permissions/workflow"),
+        "actions": _live_actions(repo),
+        "environments": live_environments(repo),
         "rulesets": [gh("api", f"repos/{repo}/rulesets/{summary['id']}") for summary in gh("api", f"repos/{repo}/rulesets")],
     }
+
+
+def _live_actions(repo: str) -> dict:
+    return (
+        gh("api", f"repos/{repo}/actions/permissions")
+        | gh("api", f"repos/{repo}/actions/permissions/workflow")
+        | gh("api", f"repos/{repo}/actions/permissions/fork-pr-contributor-approval")
+    )
+
+
+def live_environments(repo: str) -> list[dict]:
+    return [_live_environment(repo, summary["name"]) for summary in gh("api", f"repos/{repo}/environments")["environments"]]
+
+
+def _live_environment(repo: str, name: str) -> dict:
+    environment = gh("api", f"repos/{repo}/environments/{name}")
+    policies = gh("api", f"repos/{repo}/environments/{name}/deployment-branch-policies")
+    return environment | {"branch_policies": policies["branch_policies"]}
 
 
 def _live_repository(repo: str) -> dict:

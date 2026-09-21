@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import unittest
+from unittest import mock
 
+import settings_drift
 from settings_drift import find_drift
 
 
@@ -50,6 +52,31 @@ class FindDriftTest(unittest.TestCase):
         desired = {"checks": [{"context": "nextest"}]}
         live = {"checks": [{"context": "nextest"}, {"context": "extra", "integration_id": 1}]}
         self.assertEqual(find_drift(desired, live), ["checks[extra]: present live, not declared"])
+
+    def test_environment_protection_rule_added_live_is_drift(self):
+        desired = {"environments": [{"name": "release", "protection_rules": [{"type": "required_reviewers"}]}]}
+        live = {
+            "environments": [
+                {"name": "release", "protection_rules": [{"type": "required_reviewers"}, {"type": "wait_timer"}]}
+            ]
+        }
+        self.assertEqual(
+            find_drift(desired, live), ["environments[release].protection_rules[wait_timer]: present live, not declared"]
+        )
+
+    def test_live_environments_include_branch_policies(self):
+        responses = {
+            "repos/o/r/environments": {"environments": [{"name": "release"}]},
+            "repos/o/r/environments/release": {"name": "release", "can_admins_bypass": False},
+            "repos/o/r/environments/release/deployment-branch-policies": {
+                "branch_policies": [{"name": "v*", "type": "tag"}]
+            },
+        }
+        with mock.patch.object(settings_drift, "gh", side_effect=lambda _api, endpoint: responses[endpoint]):
+            self.assertEqual(
+                settings_drift.live_environments("o/r"),
+                [{"name": "release", "can_admins_bypass": False, "branch_policies": [{"name": "v*", "type": "tag"}]}],
+            )
 
     def test_empty_declared_list_rejects_live_entries(self):
         self.assertEqual(

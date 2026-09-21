@@ -52,3 +52,6 @@ codegen-units = 1
 lto = true
 panic = "abort"
 strip = "symbols"
+
+[workspace.metadata.vet]
+store = { path = "./vet" }

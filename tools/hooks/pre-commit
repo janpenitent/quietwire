@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# §17.12: refuse a commit whose staged changes contain key material.
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null; then
+    echo "pre-commit: gitleaks not found; install it (see CONTRIBUTING.md)" >&2
+    exit 1
+fi
+
+exec gitleaks git --pre-commit --staged --redact --no-banner \
+    --config "$(git rev-parse --show-toplevel)/.gitleaks.toml"
