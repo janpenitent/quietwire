@@ -38,3 +38,28 @@ SPDX-License-Identifier = "BSD-3-Clause"
 path = "crates/quietwire-crypto/tests/fixtures/derived/*.json"
 SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/rfc7748/*.json"
+SPDX-FileCopyrightText = "2016 IETF Trust and the persons identified as the document authors"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/rfc8032/*.json"
+SPDX-FileCopyrightText = "2017 IETF Trust and the persons identified as the document authors"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/acvp/*.json"
+SPDX-FileCopyrightText = "National Institute of Standards and Technology"
+SPDX-License-Identifier = "NIST-Software"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/speccheck/*.json"
+SPDX-FileCopyrightText = "Facebook, Inc. and its affiliates"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/fixtures/libsodium/*.json"
+SPDX-FileCopyrightText = "2013-2026 Frank Denis <j at pureftpd dot org>"
+SPDX-License-Identifier = "ISC"

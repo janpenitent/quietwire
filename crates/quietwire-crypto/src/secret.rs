@@ -64,13 +64,23 @@ impl SecretKey {
     pub(crate) fn build_in_place(
         write: impl FnOnce(&mut [u8; KEY_LEN]) -> Result<(), Error>,
     ) -> Result<Self, Error> {
-        let page = Box::new(DedicatedPage([0; KEY_LEN]));
-        let mut key = Self {
-            ram_lock: lock_in_ram(&page),
-            page,
-        };
+        let mut key = Self::zeroed();
         write(&mut key.page.0)?;
         Ok(key)
+    }
+
+    pub(crate) fn from_array(bytes: &[u8; KEY_LEN]) -> Self {
+        let mut key = Self::zeroed();
+        key.page.0.copy_from_slice(bytes);
+        key
+    }
+
+    fn zeroed() -> Self {
+        let page = Box::new(DedicatedPage([0; KEY_LEN]));
+        Self {
+            ram_lock: lock_in_ram(&page),
+            page,
+        }
     }
 }
 
