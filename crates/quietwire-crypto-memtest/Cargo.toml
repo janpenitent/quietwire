@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-crypto-memtest"
+description = "Test-only global allocator that reports secrets left in freed heap memory (QW-U-CRY-050, ADR-0015)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+# The workspace lints forbid unsafe code; this crate needs it to implement
+# GlobalAlloc, so it restates them with unsafe denied by default and allowed
+# item by item, each block carrying a SAFETY proof (ADR-0015).
+[lints.rust]
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+panic = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+undocumented_unsafe_blocks = "deny"
+missing_safety_doc = "deny"
+
+[dev-dependencies]
+zeroize.workspace = true

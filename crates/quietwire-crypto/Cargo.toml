@@ -27,5 +27,6 @@ subtle.workspace = true
 zeroize.workspace = true
 
 [dev-dependencies]
+quietwire-crypto-memtest.workspace = true
 serde.workspace = true
 serde_json.workspace = true

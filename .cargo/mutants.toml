@@ -8,7 +8,3 @@ additional_cargo_test_args = ["--no-tests=pass"]
 
 # The uniffi-bindgen entry point only calls into uniffi; nothing to test.
 exclude_globs = ["crates/quietwire-ffi/src/bin/uniffi-bindgen.rs"]
-
-# Wiping on drop can only be observed by reading freed memory, which takes the
-# custom test allocator of QW-U-CRY-050.
-exclude_re = ["<impl Drop for SecretKey>::drop"]

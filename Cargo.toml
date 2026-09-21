@@ -6,6 +6,7 @@
 resolver = "2"
 members = [
     "crates/quietwire-crypto",
+    "crates/quietwire-crypto-memtest",
     "crates/quietwire-e2e",
     "crates/quietwire-packet",
     "crates/quietwire-route",
@@ -26,6 +27,7 @@ publish = false
 
 [workspace.dependencies]
 quietwire-crypto = { path = "crates/quietwire-crypto" }
+quietwire-crypto-memtest = { path = "crates/quietwire-crypto-memtest" }
 quietwire-e2e = { path = "crates/quietwire-e2e" }
 quietwire-packet = { path = "crates/quietwire-packet" }
 quietwire-route = { path = "crates/quietwire-route" }
