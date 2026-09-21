@@ -106,11 +106,31 @@ def fetch_live(repo: str) -> dict:
 
 
 def _live_repository(repo: str) -> dict:
-    live = gh("api", f"repos/{repo}")
+    live = gh("api", f"repos/{repo}") | _merge_settings(repo)
     live["enable_vulnerability_alerts"] = _endpoint_exists(f"repos/{repo}/vulnerability-alerts")
     live["enable_automated_security_fixes"] = gh("api", f"repos/{repo}/automated-security-fixes")["enabled"]
     live["private_vulnerability_reporting"] = gh("api", f"repos/{repo}/private-vulnerability-reporting")["enabled"]
     return live
+
+
+# The REST API omits these fields for read-only tokens; GraphQL does not.
+MERGE_SETTINGS_QUERY = """
+query($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    allow_squash_merge: squashMergeAllowed
+    allow_merge_commit: mergeCommitAllowed
+    allow_rebase_merge: rebaseMergeAllowed
+    allow_auto_merge: autoMergeAllowed
+    delete_branch_on_merge: deleteBranchOnMerge
+  }
+}
+"""
+
+
+def _merge_settings(repo: str) -> dict:
+    owner, name = repo.split("/")
+    result = gh("api", "graphql", "-f", f"query={MERGE_SETTINGS_QUERY}", "-F", f"owner={owner}", "-F", f"name={name}")
+    return result["data"]["repository"]
 
 
 def _endpoint_exists(endpoint: str) -> bool:
