@@ -858,6 +858,7 @@ dependencies = [
 name = "quietwire-packet"
 version = "0.0.0"
 dependencies = [
+ "getrandom 0.4.3",
  "quietwire-crypto",
 ]
 

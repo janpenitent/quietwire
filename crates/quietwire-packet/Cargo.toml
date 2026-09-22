@@ -16,4 +16,5 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+getrandom.workspace = true
 quietwire-crypto.workspace = true
