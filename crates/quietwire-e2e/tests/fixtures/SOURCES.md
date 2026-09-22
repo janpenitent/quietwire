@@ -12,12 +12,14 @@ Signal publishes no test vectors for X3DH or the Double Ratchet, and the
 QUIETWIRE constructions differ from Signal's in any case (ADR-0019).
 `derived/generate.py` produces the vectors here without touching the Rust
 crates under test: X25519 and Ed25519 from cryptography 50.0.1 (OpenSSL),
-BLAKE3 from blake3 1.0.9, ML-KEM-768 from kyber-py 1.2.0 and HKDF-SHA512 from
-the Python standard library `hmac` module.
+BLAKE3 from blake3 1.0.9, ML-KEM-768 from kyber-py 1.2.0, XChaCha20-Poly1305
+from PyNaCl 1.6.2 (libsodium), and HKDF-SHA512 and HMAC-SHA512 from the Python
+standard library `hmac` module.
 
 kyber-py is a pure-Python FIPS 203 implementation. Before it produces
 anything, the script checks it against the ML-KEM-768 key generation and
-encapsulation vectors that `quietwire-crypto` pins from ACVP.
+encapsulation vectors that `quietwire-crypto` pins from ACVP. It also checks
+PyNaCl against the Wycheproof XChaCha20-Poly1305 vectors pinned there.
 
 Every private input is `SHA-256("QUIETWIRE test vector " ‖ label)`, so each
 key can be traced back to its label in the script.
@@ -25,6 +27,7 @@ key can be traced back to its label in the script.
 | File | Checks |
 |---|---|
 | `derived/x3dh.json` | `QW-U-E2E-011`: hybrid X3DH (plan §5.3), with and without a one-time prekey. Transcript and `SK` for the initiator; `SK` for the responder |
+| `derived/ratchet.json` | `QW-U-E2E-012`: Double Ratchet (plan §5.4) over three DH ratchet steps. Frames arrive out of order, and one is opened with a key skipped in the previous chain. Each sent frame is checked byte for byte, and each received plaintext is checked |
 
 Regenerating them must give byte-identical files; a difference means one side
 changed.
