@@ -4,13 +4,15 @@
 
 """Regenerates the vectors in this directory from implementations independent
 of the Rust crates under test: cryptography 50.0.1 (OpenSSL) for X25519 and
-Ed25519, blake3 1.0.9 for BLAKE3, kyber-py 1.2.0 for ML-KEM-768 and the Python
-standard library for HKDF-SHA512.
+Ed25519, blake3 1.0.9 for BLAKE3, kyber-py 1.2.0 for ML-KEM-768, PyNaCl 1.6.2
+(libsodium) for XChaCha20-Poly1305 and the Python standard library for
+HKDF-SHA512 and HMAC-SHA512.
 
-kyber-py is a pure-Python FIPS 203 implementation; before it is trusted here it
-is checked against the ACVP vectors that quietwire-crypto pins.
+kyber-py is a pure-Python FIPS 203 implementation and PyNaCl's AEAD is not
+otherwise exercised here; before either is trusted it is checked against the
+ACVP and Wycheproof vectors that quietwire-crypto pins.
 
-    pip install cryptography==50.0.1 blake3==1.0.9 kyber-py==1.2.0
+    pip install cryptography==50.0.1 blake3==1.0.9 kyber-py==1.2.0 pynacl==1.6.2
     python generate.py
 """
 
@@ -24,12 +26,19 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey, X25519PublicKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from kyber_py.ml_kem import ML_KEM_768
+from nacl.bindings import crypto_aead_xchacha20poly1305_ietf_decrypt
+from nacl.bindings import crypto_aead_xchacha20poly1305_ietf_encrypt as xchacha_seal
+from nacl.exceptions import CryptoError
 
 HERE = Path(__file__).parent
-ACVP = HERE / "../../../../quietwire-crypto/tests/fixtures/acvp"
+CRYPTO_FIXTURES = HERE / "../../../../quietwire-crypto/tests/fixtures"
+ACVP = CRYPTO_FIXTURES / "acvp"
+WYCHEPROOF_XCHACHA = CRYPTO_FIXTURES / "wycheproof/xchacha20_poly1305_test.json"
 TRANSCRIPT_CONTEXT = "QUIETWIRE-X3DH-TRANSCRIPT-v1"
 HYBRID_INFO = b"QUIETWIRE-X3DH-HYBRID-v1"
 CURVE25519_PREFIX = b"\xff" * 32
+ROOT_INFO = b"QUIETWIRE-ROOT-v1"
+PLAINTEXT_LEN = 396
 
 
 def hkdf_sha512(ikm: bytes, salt: bytes, info: bytes, length: int) -> bytes:
@@ -61,6 +70,21 @@ def check_kyber_py_against_acvp() -> None:
             bytes.fromhex(test["ek"]), bytes.fromhex(test["m"])
         )
         assert (shared.hex(), ciphertext.hex()) == (test["k"].lower(), test["c"].lower()), test["tcId"]
+
+
+def check_pynacl_against_wycheproof() -> None:
+    for group in json.loads(WYCHEPROOF_XCHACHA.read_text())["testGroups"]:
+        for test in group["tests"]:
+            key, nonce = bytes.fromhex(test["key"]), bytes.fromhex(test["iv"])
+            if len(key) != 32 or len(nonce) != 24:
+                continue
+            aad, message = bytes.fromhex(test["aad"]), bytes.fromhex(test["msg"])
+            sealed = (test["ct"] + test["tag"]).lower()
+            try:
+                matches = xchacha_seal(message, aad, nonce, key).hex() == sealed
+            except CryptoError:
+                matches = False
+            assert matches == (test["result"] != "invalid"), test["tcId"]
 
 
 def secret(label: str) -> bytes:
@@ -149,12 +173,133 @@ def hex_fields(keys: dict) -> dict:
     return {field: value.hex() for field, value in keys.items()}
 
 
+def kdf_root(root_key: bytes, own: bytes, remote: bytes) -> tuple:
+    out = hkdf_sha512(x25519(own, remote), root_key, ROOT_INFO, 64)
+    return out[:32], out[32:]
+
+
+def kdf_chain(chain_key: bytes) -> tuple:
+    def derive(constant: int) -> bytes:
+        return hmac.new(chain_key, bytes([constant]), hashlib.sha512).digest()[:32]
+
+    return derive(0x01), derive(0x02)
+
+
+class RatchetParty:
+    """The Double Ratchet of plan §5.4, written from the plan alone: every
+    chain is kept as its full list of message keys, so skipped keys need no
+    bookkeeping of their own."""
+
+    def __init__(self, root_key: bytes, own_ratchet: bytes, ratchet_labels: list):
+        self.root_key = root_key
+        self.own_ratchet = own_ratchet
+        self.ratchet_labels = ratchet_labels
+        self.remote_ratchet = None
+        self.sending = None
+        self.previous_sending_len = 0
+        self.receiving = {}
+        self.used = set()
+
+    def start_sending(self, remote: bytes) -> None:
+        self.root_key, chain_key = kdf_root(self.root_key, self.own_ratchet, remote)
+        self.sending = [chain_key, 0]
+        self.remote_ratchet = remote
+
+    def encrypt(self, nonce: bytes, plaintext: bytes) -> bytes:
+        chain_key, number = self.sending
+        message_key, self.sending[0] = kdf_chain(chain_key)
+        self.sending[1] += 1
+        header = (
+            x25519_public(self.own_ratchet)
+            + self.previous_sending_len.to_bytes(4, "little")
+            + number.to_bytes(4, "little")
+        )
+        return header + xchacha_seal(plaintext, header, nonce, message_key)
+
+    def decrypt(self, nonce: bytes, frame: bytes) -> bytes:
+        header, sealed = frame[:40], frame[40:]
+        ratchet = header[:32]
+        number = int.from_bytes(header[36:40], "little")
+        if ratchet not in self.receiving:
+            self.ratchet_step(ratchet)
+        message_key = self.message_key(ratchet, number)
+        assert (ratchet, number) not in self.used
+        self.used.add((ratchet, number))
+        return crypto_aead_xchacha20poly1305_ietf_decrypt(sealed, header, nonce, message_key)
+
+    def ratchet_step(self, remote: bytes) -> None:
+        self.root_key, chain_key = kdf_root(self.root_key, self.own_ratchet, remote)
+        self.receiving[remote] = [chain_key]
+        self.previous_sending_len = self.sending[1] if self.sending else 0
+        self.own_ratchet = secret(self.ratchet_labels.pop(0))
+        self.start_sending(remote)
+
+    def message_key(self, ratchet: bytes, number: int) -> bytes:
+        chain = self.receiving[ratchet]
+        while len(chain) <= number + 1:
+            message_key, next_chain_key = kdf_chain(chain.pop())
+            chain += [message_key, next_chain_key]
+        return chain[number]
+
+
+def ratchet_case() -> dict:
+    """Alice (the X3DH initiator) and Bob exchange frames out of order across
+    three DH ratchet steps; a3 is held back until Bob has moved on to Alice's
+    second chain, so it is served from the keys skipped in her first."""
+    shared_key = secret("ratchet shared key")
+    initiator_labels = ["ratchet alice ratchet %d" % i for i in range(3)]
+    responder_labels = ["ratchet bob signed prekey"] + ["ratchet bob ratchet %d" % i for i in range(1, 3)]
+    alice = RatchetParty(shared_key, secret(initiator_labels[0]), initiator_labels[1:])
+    bob = RatchetParty(shared_key, secret(responder_labels[0]), responder_labels[1:])
+    alice.start_sending(x25519_public(bob.own_ratchet))
+    parties = {"initiator": alice, "responder": bob}
+
+    messages, steps = {}, []
+
+    def send(sender: str, name: str) -> None:
+        nonce = secret("ratchet nonce " + name)[:24]
+        plaintext = hashlib.shake_256(b"QUIETWIRE test vector plaintext " + name.encode()).digest(PLAINTEXT_LEN)
+        frame = parties[sender].encrypt(nonce, plaintext)
+        messages[name] = {"sender": sender, "nonce": nonce.hex(), "plaintext": plaintext.hex(), "frame": frame.hex()}
+        steps.append({"send": name})
+
+    def receive(receiver: str, name: str) -> None:
+        message = messages[name]
+        assert message["sender"] != receiver
+        opened = parties[receiver].decrypt(bytes.fromhex(message["nonce"]), bytes.fromhex(message["frame"]))
+        assert opened.hex() == message["plaintext"], name
+        steps.append({"receive": name})
+
+    for name in ["a0", "a1", "a2", "a3"]:
+        send("initiator", name)
+    for name in ["a0", "a2", "a1"]:
+        receive("responder", name)
+    for name in ["b0", "b1"]:
+        send("responder", name)
+    for name in ["b1", "b0"]:
+        receive("initiator", name)
+    send("initiator", "a4")
+    receive("responder", "a4")
+    receive("responder", "a3")
+    send("responder", "b2")
+    receive("initiator", "b2")
+
+    return {
+        "shared_key": shared_key.hex(),
+        "initiator_ratchet_keys": [secret(label).hex() for label in initiator_labels],
+        "responder_ratchet_keys": [secret(label).hex() for label in responder_labels],
+        "messages": [{"name": name, **message} for name, message in messages.items()],
+        "steps": steps,
+    }
+
+
 def write(name: str, value) -> None:
     (HERE / name).write_text(json.dumps(value, indent=2) + "\n")
 
 
 if __name__ == "__main__":
     check_kyber_py_against_acvp()
+    check_pynacl_against_wycheproof()
     write(
         "x3dh.json",
         [
@@ -162,3 +307,4 @@ if __name__ == "__main__":
             x3dh_case("without one-time prekey", False),
         ],
     )
+    write("ratchet.json", ratchet_case())

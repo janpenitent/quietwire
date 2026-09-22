@@ -192,15 +192,11 @@ fn derive_shared_key(secrets: &[SecretKey], transcript: &[u8; 32]) -> Result<Sec
 }
 
 #[cfg(test)]
-#[path = "../tests/support/mod.rs"]
-mod support;
-
-#[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-    use super::support::{hex, x3dh_cases};
     use super::*;
+    use crate::support::{hex, x3dh_cases};
 
     #[test]
     fn initiator_matches_every_independent_vector() {

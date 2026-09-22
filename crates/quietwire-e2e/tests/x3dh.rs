@@ -10,69 +10,25 @@
 mod support;
 
 use quietwire_crypto::{
-    ed25519::SigningKey,
-    mlkem::{Ciphertext, DecapsulationKey, CIPHERTEXT_LEN},
-    x25519::{PrivateKey, PublicKey},
+    mlkem::{Ciphertext, CIPHERTEXT_LEN},
+    x25519::PublicKey,
     Error, SecretKey,
 };
-use quietwire_e2e::x3dh::{IdentityPublic, InitialMessage, Initiator, PrekeyBundle, Responder};
-use support::{hex, x3dh_cases};
+use quietwire_e2e::x3dh::{IdentityPublic, InitialMessage, PrekeyBundle, Responder};
+use support::{hex, x3dh_cases, GeneratedParty};
 
 const LOW_ORDER_POINT: PublicKey = PublicKey::from_bytes([0; 32]);
-
-struct Party {
-    identity: IdentityPublic,
-    identity_dh: PrivateKey,
-    kem: DecapsulationKey,
-    signed_prekey: PrivateKey,
-    one_time_prekey: PrivateKey,
-}
-
-impl Party {
-    fn generate() -> Self {
-        let identity_dh = PrivateKey::generate().unwrap();
-        let kem = DecapsulationKey::generate().unwrap();
-        Self {
-            identity: IdentityPublic {
-                sign: SigningKey::generate().unwrap().verifying_key(),
-                dh: identity_dh.public_key(),
-                kem: kem.encapsulation_key(),
-            },
-            identity_dh,
-            kem,
-            signed_prekey: PrivateKey::generate().unwrap(),
-            one_time_prekey: PrivateKey::generate().unwrap(),
-        }
-    }
-
-    fn initiator(&self) -> Initiator<'_> {
-        Initiator {
-            identity: &self.identity,
-            identity_dh: &self.identity_dh,
-        }
-    }
-
-    fn responder(&self, with_one_time_prekey: bool) -> Responder<'_> {
-        Responder {
-            identity: &self.identity,
-            identity_dh: &self.identity_dh,
-            kem: &self.kem,
-            signed_prekey: &self.signed_prekey,
-            one_time_prekey: with_one_time_prekey.then_some(&self.one_time_prekey),
-        }
-    }
-}
 
 fn bytes(key: &SecretKey) -> Vec<u8> {
     key.expose_secret().to_vec()
 }
 
-fn initiate(alice: &Party, bundle: &PrekeyBundle) -> (Vec<u8>, InitialMessage) {
+fn initiate(alice: &GeneratedParty, bundle: &PrekeyBundle) -> (Vec<u8>, InitialMessage) {
     let (shared, message) = alice.initiator().initiate(bundle).unwrap();
     (bytes(&shared), message)
 }
 
-fn respond(bob: &Responder<'_>, alice: &Party, message: &InitialMessage) -> Vec<u8> {
+fn respond(bob: &Responder<'_>, alice: &GeneratedParty, message: &InitialMessage) -> Vec<u8> {
     bytes(&bob.respond(&alice.identity, message).unwrap())
 }
 
@@ -113,7 +69,7 @@ fn vector_private_keys_match_their_public_keys() {
 
 #[test]
 fn fresh_sessions_agree_with_and_without_one_time_prekey() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
 
     for with_one_time_prekey in [true, false] {
         let responder = bob.responder(with_one_time_prekey);
@@ -125,7 +81,7 @@ fn fresh_sessions_agree_with_and_without_one_time_prekey() {
 
 #[test]
 fn every_session_derives_a_new_key() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
     let bundle = bob.responder(true).bundle();
 
     let (first, first_message) = initiate(&alice, &bundle);
@@ -137,7 +93,7 @@ fn every_session_derives_a_new_key() {
 
 #[test]
 fn stripping_the_one_time_prekey_splits_the_session() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
     let responder = bob.responder(true);
     let stripped = PrekeyBundle {
         one_time_prekey: None,
@@ -151,7 +107,7 @@ fn stripping_the_one_time_prekey_splits_the_session() {
 
 #[test]
 fn a_forged_kem_ciphertext_splits_the_session() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
     let responder = bob.responder(true);
     let (initiator_key, message) = initiate(&alice, &responder.bundle());
     let forged = InitialMessage {
@@ -164,7 +120,11 @@ fn a_forged_kem_ciphertext_splits_the_session() {
 
 #[test]
 fn a_claimed_initiator_identity_splits_the_session() {
-    let (alice, bob, mallory) = (Party::generate(), Party::generate(), Party::generate());
+    let (alice, bob, mallory) = (
+        GeneratedParty::generate(),
+        GeneratedParty::generate(),
+        GeneratedParty::generate(),
+    );
     let responder = bob.responder(true);
     let (initiator_key, message) = initiate(&alice, &responder.bundle());
     let claimed = IdentityPublic {
@@ -179,7 +139,7 @@ fn a_claimed_initiator_identity_splits_the_session() {
 
 #[test]
 fn initiator_refuses_a_low_order_prekey() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
     let bundle = bob.responder(true).bundle();
     let low_order_signed_prekey = PrekeyBundle {
         signed_prekey: LOW_ORDER_POINT,
@@ -198,7 +158,7 @@ fn initiator_refuses_a_low_order_prekey() {
 
 #[test]
 fn responder_refuses_a_low_order_ephemeral_key() {
-    let (alice, bob) = (Party::generate(), Party::generate());
+    let (alice, bob) = (GeneratedParty::generate(), GeneratedParty::generate());
     let responder = bob.responder(true);
     let (_, message) = initiate(&alice, &responder.bundle());
     let low_order = InitialMessage {

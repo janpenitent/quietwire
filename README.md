@@ -254,7 +254,7 @@ Standard Signal Double Ratchet, with:
 
 - **Root chain**: `out = HKDF-SHA512(ikm = X25519(DH_self, DH_remote), salt = RK, info = "QUIETWIRE-ROOT-v1")`, 64 bytes, split as `RK' = out[0..32]`, `CK' = out[32..64]`. The old root key is the salt and the new DH output is the input keying material — the reverse order is a real and frequently-made implementation bug, so the argument names are written out here rather than positionally
 - **Symmetric chain**: `MK = HMAC-SHA512(key = CK, message = 0x01)[0..32]`, `CK' = HMAC-SHA512(key = CK, message = 0x02)[0..32]`. Argument names are written out for the same reason as the root chain above — `HMAC(a, b)` is ambiguous about which is the key, and getting it backwards produces a scheme that works, interoperates with itself, and is wrong
-- **Message encryption**: `XChaCha20-Poly1305(MK, nonce_24_random, plaintext, aad = ratchet_header)`
+- **Message encryption**: `XChaCha20-Poly1305(MK, nonce_24_random, plaintext, aad = ratchet_header)`. The frame has no nonce field: the nonce travels in the cell header (§6.1), which reuses it under its own, independent key (ADR-0020)
 - **Skipped keys**: up to 1 000 retained per chain, 10 000 total, evicted oldest-first. Necessary because a DTN reorders messages routinely.
 - **Chain limit**: after 2 000 messages without a DH ratchet, sending is blocked until the peer responds. Prevents unbounded key material.
 
@@ -348,7 +348,7 @@ Offset  Size  Field                      In AEAD AAD?
   2      1    ttl                hops remaining, 0..64              NO
   3      1    copies             copy budget, 0..15                 NO
   4     16    tag                per-message tag (see §5.5)         yes
- 20     24    nonce              random, XChaCha20-Poly1305         yes
+ 20     24    nonce              random, shared with frame (ADR-0020) yes
  44    452    ciphertext         E2E encrypted payload              —
 496     16    mac                Poly1305 tag                       —
 ──────────────────────────────────────────────────────────────────────
@@ -375,7 +375,7 @@ Offset  Size  Field
 Total: 452 bytes
 ```
 
-An earlier draft described `inner_ciphertext` as "including a 16-byte inner Poly1305 tag" **and** listed a separate 16-byte `inner_mac` — the tag was counted twice. It is counted once: 40 bytes of ratchet header, 396 bytes of ciphertext, 16 bytes of tag, 452 in total.
+An earlier draft described `inner_ciphertext` as "including a 16-byte inner Poly1305 tag" **and** listed a separate 16-byte `inner_mac` — the tag was counted twice. It is counted once: 40 bytes of ratchet header, 396 bytes of ciphertext, 16 bytes of tag, 452 in total. The frame's nonce is not in it; it is the cell's nonce at offset 20 (ADR-0020).
 
 The first message of a session carries `CT_pq` (1 088 bytes for ML-KEM-768) and `EK_A_pub` (32 bytes), which do not fit in one cell. **1 120 bytes over 365-byte bodies is four cells, not three** — an earlier draft said three, which is 1 095 bytes of capacity and 25 bytes short. Session establishment is therefore always a **four-cell fragment set** with `content_type = 0x07 session_init`, reassembled before the ratchet starts, with the fourth cell's remaining 335 bytes carrying the beginning of the first real message. This is the only message type with a mandatory multi-cell form, and it is why a first message to a new contact is slower to arrive than every subsequent one.
 
@@ -1649,7 +1649,7 @@ Every checklist item below is a contractual review obligation. The auditor marks
 | `A023` | Link-layer and E2E-layer keys are provably independent |
 | `A024` | Safety numbers are computed over a canonical, order-independent encoding; two devices always compute the same value |
 | `A025` | The 60-digit safety number's collision resistance is calculated and stated |
-| `A026` | Nonce generation is from the OS CSPRNG, never a counter, never derived from state. Collision probability over the system's lifetime is calculated and stated |
+| `A026` | Nonce generation is from the OS CSPRNG, never a counter, never derived from state. Collision probability over the system's lifetime is calculated and stated (ADR-0020: below 2⁻¹¹³ at 2⁴⁰ messages under one key) |
 | `A027` | AEAD associated data covers every field whose modification would change meaning |
 | `A028` | Fields deliberately outside the E2E MAC (`ttl`, `copies`) are analysed: exactly what can a hostile relay achieve by forging them, and is that bounded? |
 | `A029` | The protocol is analysed under an attacker who controls the entire network, not merely observes it |

@@ -8,4 +8,9 @@
 #[cfg(test)]
 extern crate self as quietwire_e2e;
 
+pub mod ratchet;
 pub mod x3dh;
+
+#[cfg(test)]
+#[path = "../tests/support/mod.rs"]
+mod support;
