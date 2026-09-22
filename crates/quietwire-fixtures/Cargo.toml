@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-fixtures"
+description = "Test-only helpers that decode the hex and JSON fixtures the integration tests read."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+# This crate runs only under `cargo test`, where a malformed fixture must abort
+# the run rather than be reported, so the workspace ban on panicking helpers is
+# restated without it.
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true

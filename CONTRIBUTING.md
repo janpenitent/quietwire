@@ -94,6 +94,15 @@ changes between versions, and `--locked` rejects a store formatted by another.
 Every new file needs an SPDX header (`reuse annotate`). Code is Apache-2.0,
 specifications and documentation CC-BY-4.0, test vectors and corpora CC0-1.0.
 
+## Editor diagnostics
+
+`rust-analyzer` reports one error the compiler does not: `E0599` on
+`crates/quietwire-crypto/src/mlkem.rs`, where `Array<u8, KeySize>` converts
+into `[u8; ENCAPSULATION_KEY_LEN]`. It resolves the generic length differently
+than rustc does. `cargo clippy --workspace --all-targets -- -D warnings` and
+the ML-KEM known-answer tests are the authority; do not rewrite the conversion
+to silence the editor.
+
 ## Secret scanning
 
 CI (`secret-scan`) runs [gitleaks](https://github.com/gitleaks/gitleaks) with

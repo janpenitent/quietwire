@@ -801,6 +801,7 @@ dependencies = [
  "ml-kem",
  "proptest",
  "quietwire-crypto-memtest",
+ "quietwire-fixtures",
  "region",
  "serde",
  "serde_json",
@@ -824,6 +825,7 @@ version = "0.0.0"
 dependencies = [
  "proptest",
  "quietwire-crypto",
+ "quietwire-fixtures",
  "serde",
  "serde_json",
  "zeroize",
@@ -835,6 +837,14 @@ version = "0.0.0"
 dependencies = [
  "quietwire-core",
  "uniffi",
+]
+
+[[package]]
+name = "quietwire-fixtures"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
