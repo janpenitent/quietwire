@@ -2,12 +2,21 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(dead_code, clippy::unwrap_used, clippy::expect_used, clippy::panic)]
+#![allow(
+    dead_code,
+    unused_imports,
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic
+)]
 
-#[path = "../../../quietwire-crypto/tests/support/mod.rs"]
-mod fixtures;
+use serde::de::DeserializeOwned;
 
-pub use fixtures::{hex, hex_array, load_fixture};
+pub use quietwire_fixtures::{hex, hex_array};
+
+pub fn load_fixture<T: DeserializeOwned>(relative_path: &str) -> T {
+    quietwire_fixtures::load_fixture(env!("CARGO_MANIFEST_DIR"), relative_path)
+}
 
 use quietwire_crypto::{
     aead::Nonce,
