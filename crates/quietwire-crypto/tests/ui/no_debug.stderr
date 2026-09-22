@@ -1,0 +1,71 @@
+error[E0277]: `SecretKey` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:16:22
+   |
+16 |     requires_debug::<SecretKey>();
+   |                      ^^^^^^^^^ the trait `Debug` is not implemented for `SecretKey`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`
+
+error[E0277]: `PrivateKey` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:17:22
+   |
+17 |     requires_debug::<PrivateKey>();
+   |                      ^^^^^^^^^^ the trait `Debug` is not implemented for `PrivateKey`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`
+
+error[E0277]: `SigningKey` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:18:22
+   |
+18 |     requires_debug::<SigningKey>();
+   |                      ^^^^^^^^^^ the trait `Debug` is not implemented for `SigningKey`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`
+
+error[E0277]: `DecapsulationKey` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:19:22
+   |
+19 |     requires_debug::<DecapsulationKey>();
+   |                      ^^^^^^^^^^^^^^^^ the trait `Debug` is not implemented for `DecapsulationKey`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`
+
+error[E0277]: `Kek` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:20:22
+   |
+20 |     requires_debug::<Kek>();
+   |                      ^^^ the trait `Debug` is not implemented for `Kek`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`
+
+error[E0277]: `Dek` doesn't implement `Debug`
+  --> tests/ui/no_debug.rs:21:22
+   |
+21 |     requires_debug::<Dek>();
+   |                      ^^^ the trait `Debug` is not implemented for `Dek`
+   |
+note: required by a bound in `requires_debug`
+  --> tests/ui/no_debug.rs:13:22
+   |
+13 | fn requires_debug<T: std::fmt::Debug>() {}
+   |                      ^^^^^^^^^^^^^^^ required by this bound in `requires_debug`

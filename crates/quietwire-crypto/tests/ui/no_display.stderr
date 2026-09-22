@@ -1,0 +1,71 @@
+error[E0277]: `SecretKey` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:16:24
+   |
+16 |     requires_display::<SecretKey>();
+   |                        ^^^^^^^^^ the trait `std::fmt::Display` is not implemented for `SecretKey`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`
+
+error[E0277]: `PrivateKey` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:17:24
+   |
+17 |     requires_display::<PrivateKey>();
+   |                        ^^^^^^^^^^ the trait `std::fmt::Display` is not implemented for `PrivateKey`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`
+
+error[E0277]: `SigningKey` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:18:24
+   |
+18 |     requires_display::<SigningKey>();
+   |                        ^^^^^^^^^^ the trait `std::fmt::Display` is not implemented for `SigningKey`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`
+
+error[E0277]: `DecapsulationKey` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:19:24
+   |
+19 |     requires_display::<DecapsulationKey>();
+   |                        ^^^^^^^^^^^^^^^^ the trait `std::fmt::Display` is not implemented for `DecapsulationKey`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`
+
+error[E0277]: `Kek` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:20:24
+   |
+20 |     requires_display::<Kek>();
+   |                        ^^^ the trait `std::fmt::Display` is not implemented for `Kek`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`
+
+error[E0277]: `Dek` doesn't implement `std::fmt::Display`
+  --> tests/ui/no_display.rs:21:24
+   |
+21 |     requires_display::<Dek>();
+   |                        ^^^ the trait `std::fmt::Display` is not implemented for `Dek`
+   |
+note: required by a bound in `requires_display`
+  --> tests/ui/no_display.rs:13:24
+   |
+13 | fn requires_display<T: std::fmt::Display>() {}
+   |                        ^^^^^^^^^^^^^^^^^ required by this bound in `requires_display`

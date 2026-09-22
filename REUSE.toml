@@ -63,3 +63,8 @@ SPDX-License-Identifier = "Apache-2.0"
 path = "crates/quietwire-crypto/tests/fixtures/libsodium/*.json"
 SPDX-FileCopyrightText = "2013-2026 Frank Denis <j at pureftpd dot org>"
 SPDX-License-Identifier = "ISC"
+
+[[annotations]]
+path = "crates/quietwire-crypto/tests/ui/*.stderr"
+SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
+SPDX-License-Identifier = "CC0-1.0"
