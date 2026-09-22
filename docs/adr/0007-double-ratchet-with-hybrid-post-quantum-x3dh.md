@@ -20,7 +20,7 @@ Sessions use a hybrid X3DH (X25519 + ML-KEM-768) handshake followed by the Doubl
 
 ## Consequences
 
-Every Signal test vector and the FIPS 203 ML-KEM-768 vectors must pass.
+The protocol test vectors and the FIPS 203 ML-KEM-768 vectors must pass. Signal publishes no X3DH or Double Ratchet vectors, so ADR-0019 derives them from independent implementations.
 
 ## Rejected alternatives
 
