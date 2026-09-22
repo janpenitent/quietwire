@@ -33,6 +33,12 @@ allow = [
     "MPL-2.0",
 ]
 
+# libfuzzer-sys carries LLVM's libFuzzer runtime, which is NCSA. It only ever
+# links into a fuzz target, never into a shipped artifact.
+[[licenses.exceptions]]
+crate = "libfuzzer-sys"
+allow = ["NCSA"]
+
 [bans]
 multiple-versions = "deny"
 wildcards = "deny"

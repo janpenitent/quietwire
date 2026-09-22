@@ -11,3 +11,4 @@ __pycache__/
 *.pyc
 /tools/fuzz/target
 /tools/fuzz/corpus/*/.tmp*
+/tools/fuzz/artifacts
