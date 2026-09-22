@@ -83,3 +83,47 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: tools/ci/check-repo-url.sh
+
+  cross-check:
+    name: check ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: aarch64-linux-android, ndk-prefix: aarch64-linux-android26 }
+          - { os: ubuntu-latest, target: armv7-linux-androideabi, ndk-prefix: armv7a-linux-androideabi26 }
+          - { os: ubuntu-latest, target: x86_64-linux-android, ndk-prefix: x86_64-linux-android26 }
+          - { os: macos-latest, target: aarch64-apple-ios }
+          - { os: macos-latest, target: aarch64-apple-ios-sim }
+          - { os: macos-latest, target: x86_64-apple-darwin }
+    env:
+      IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup target add ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          key: ${{ matrix.target }}
+      - if: matrix.ndk-prefix
+        env:
+          TARGET: ${{ matrix.target }}
+          NDK_PREFIX: ${{ matrix.ndk-prefix }}
+        run: tools/ci/export-android-toolchain.sh
+      - run: cargo check --workspace --all-targets --locked --target ${{ matrix.target }}
+
+  native-test:
+    name: nextest ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2.87.17
+        with:
+          tool: cargo-nextest
+      - run: cargo nextest run --workspace --locked --no-tests=pass

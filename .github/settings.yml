@@ -89,6 +89,14 @@ rulesets:
             - context: repository-url
             - context: reuse-lint
             - context: secret-scan
+            - context: "check aarch64-linux-android"
+            - context: "check armv7-linux-androideabi"
+            - context: "check x86_64-linux-android"
+            - context: "check aarch64-apple-ios"
+            - context: "check aarch64-apple-ios-sim"
+            - context: "check x86_64-apple-darwin"
+            - context: "nextest macos-latest"
+            - context: "nextest windows-latest"
             # Stage 8 runs here, not in a merge queue: see ADR-0013.
             - context: reproducible-build
 
