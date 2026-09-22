@@ -4,6 +4,12 @@
 
 //! `QW-U-CRY-020`: the compiled-in Argon2id parameters are exactly the ones in
 //! PROTOCOL.md §5.7. Changing them means changing this test.
+//!
+//! `QW-N-CRY-021`, the companion gate, bounds derivation latency on the
+//! fastest and the slowest supported device. It cannot live here: a CI runner
+//! is neither of those two, so a number measured on one would either pass
+//! vacuously or fail for the wrong reason. It arrives with the device lab the
+//! §18 field tests need.
 
 #![allow(missing_docs)]
 

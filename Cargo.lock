@@ -799,6 +799,7 @@ dependencies = [
  "hkdf",
  "hmac",
  "ml-kem",
+ "proptest",
  "quietwire-crypto-memtest",
  "quietwire-fixtures",
  "region",
