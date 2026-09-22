@@ -17,6 +17,7 @@ pub mod mlkem;
 pub mod password;
 mod rng;
 mod secret;
+mod stack;
 pub mod x25519;
 
 pub use error::Error;
