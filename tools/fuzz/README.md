@@ -57,6 +57,17 @@ empty corpus wastes the run.
 ## Schedule
 
 - every push: 60 s per target, in CI;
-- nightly: 6 h per target, the GitHub-hosted runner cap. The 24 h nightly and
-  72 h release-candidate runs of §17 need a self-hosted runner or a local
-  machine.
+- nightly: 6 h per target, the GitHub-hosted runner cap.
+
+§17 asks for 24 h per target nightly and 72 h before a release candidate, so
+the hosted job leaves 18 h of every 24 unspent. `soak.sh` runs that remainder
+on a self-hosted runner or a developer machine, one target at a time:
+
+```sh
+tools/fuzz/soak.sh        # 18 h per target, the nightly shortfall
+tools/fuzz/soak.sh 72     # the release-candidate run
+```
+
+Its output, with the corpus growth it commits, is the evidence that the budget
+was spent. Until it has been, the Phase 1 exit criterion of 24 fuzz-hours per
+target is unmet, which `docs/AUDIT/OPEN_QUESTIONS.md` records as open.
