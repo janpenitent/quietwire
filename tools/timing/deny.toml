@@ -14,9 +14,11 @@ all-features = true
 version = 2
 yanked = "deny"
 unmaintained = "all"
+unsound = "all"
 ignore = [
     { id = "RUSTSEC-2021-0139", reason = "ansi_term is unmaintained; it colours clap 2's help text in a tool that never ships" },
     { id = "RUSTSEC-2024-0375", reason = "atty is unmaintained; it detects a tty for clap 2 in a tool that never ships" },
+    { id = "RUSTSEC-2021-0145", reason = "atty's unaligned read affects Windows only and needs a custom global allocator; this tool sets none and runs on ubuntu-latest. No patched version exists, and clap 2's default features pull atty in, so dropping it means dropping dudect-bencher" },
 ]
 
 [licenses]
