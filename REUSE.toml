@@ -5,7 +5,7 @@
 version = 1
 
 [[annotations]]
-path = ["Cargo.lock", "flake.lock", "NOTICE", "docs/AUDIT/.gitkeep", "tools/fuzz/Cargo.lock"]
+path = ["Cargo.lock", "flake.lock", "NOTICE", "docs/AUDIT/.gitkeep", "tools/fuzz/Cargo.lock", "tools/timing/Cargo.lock"]
 SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"
 

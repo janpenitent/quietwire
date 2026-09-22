@@ -29,6 +29,7 @@ paths = [
     '''^vet/imports\.lock$''',
     '''^tools/ci/[^/]*requirements\.txt$''',
     '''^tools/fuzz/Cargo\.lock$''',
+    '''^tools/timing/Cargo\.lock$''',
 ]
 
 [[allowlists]]

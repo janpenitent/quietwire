@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# The root policy, relaxed for the three crates dudect-bencher's clap 2 command
+# line drags in. This crate is a measurement tool: it is not published, not
+# vendored into any release artifact and not covered by `cargo vet`, so none of
+# these reach a user. The workspace scan keeps the strict policy.
+
+[graph]
+all-features = true
+
+[advisories]
+version = 2
+yanked = "deny"
+unmaintained = "all"
+ignore = [
+    { id = "RUSTSEC-2021-0139", reason = "ansi_term is unmaintained; it colours clap 2's help text in a tool that never ships" },
+    { id = "RUSTSEC-2024-0375", reason = "atty is unmaintained; it detects a tty for clap 2 in a tool that never ships" },
+]
+
+[licenses]
+version = 2
+confidence-threshold = 0.93
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "MPL-2.0",
+]
+
+[bans]
+multiple-versions = "deny"
+wildcards = "deny"
+allow-wildcard-paths = true
+skip = [
+    { crate = "bitflags@1", reason = "clap 2, via dudect-bencher, lags ctrlc on bitflags 2; build-time only, in a tool that never ships" },
+]
+deny = [
+    { crate = "openssl", reason = "Crypto comes from audited RustCrypto and dalek crates only" },
+    { crate = "openssl-sys", reason = "Crypto comes from audited RustCrypto and dalek crates only" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
