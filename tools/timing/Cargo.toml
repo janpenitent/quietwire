@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-timing"
+description = "Welch's t-test over the secret-dependent operations (§16, QW-U-CRY-030..046)."
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/janpenitent/quietwire"
+authors = ["Janier Rodríguez <jrodriguez@virtualcable.es>"]
+publish = false
+
+[workspace]
+
+[lints.rust]
+missing_docs = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+
+[dependencies]
+dudect-bencher = "=0.7.0"
+quietwire-crypto = { path = "../../crates/quietwire-crypto" }
+
+[[bin]]
+name = "quietwire-timing"
+path = "src/main.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1
