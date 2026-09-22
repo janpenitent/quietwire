@@ -15,6 +15,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   MIRI_TOOLCHAIN: nightly-2026-09-20
+  FUZZ_TOOLCHAIN: nightly-2026-09-20
 
 jobs:
   audit:
@@ -60,3 +61,35 @@ jobs:
       - run: cargo +"$MIRI_TOOLCHAIN" miri nextest run -p quietwire-crypto --locked
         env:
           MIRIFLAGS: -Zmiri-disable-isolation
+
+  fuzz:
+    name: fuzz ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x3dh_bundle, x3dh_initial_message, ratchet_header, ratchet_session]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal --component rust-src
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: tools/fuzz
+      - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2.87.17
+        with:
+          tool: cargo-fuzz@0.13.2
+      # §17 asks for 24 h; 6 h is the GitHub-hosted runner cap, so the rest of
+      # the budget runs on a self-hosted runner or a developer machine.
+      #
+      # The prebuilt cargo-fuzz is a musl binary and defaults to its own
+      # triple, where the sanitizer cannot link, so the target is explicit.
+      - run: |
+          cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz \
+            --target x86_64-unknown-linux-gnu ${{ matrix.target }} -- \
+            -max_total_time=21000 -timeout=1
+      - if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: fuzz-artifacts-${{ matrix.target }}
+          path: tools/fuzz/artifacts/

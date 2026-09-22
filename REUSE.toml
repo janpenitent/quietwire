@@ -5,7 +5,7 @@
 version = 1
 
 [[annotations]]
-path = ["Cargo.lock", "flake.lock", "NOTICE", "docs/AUDIT/.gitkeep"]
+path = ["Cargo.lock", "flake.lock", "NOTICE", "docs/AUDIT/.gitkeep", "tools/fuzz/Cargo.lock"]
 SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"
 
@@ -71,5 +71,10 @@ SPDX-License-Identifier = "ISC"
 
 [[annotations]]
 path = "crates/quietwire-crypto/tests/ui/*.stderr"
+SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "tools/fuzz/corpus/**"
 SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"

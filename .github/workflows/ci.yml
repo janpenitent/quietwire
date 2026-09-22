@@ -14,6 +14,7 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  FUZZ_TOOLCHAIN: nightly-2026-09-20
 
 jobs:
   lint:
@@ -41,6 +42,32 @@ jobs:
         with:
           tool: cargo-nextest
       - run: cargo nextest run --workspace --locked --no-tests=pass
+
+  fuzz:
+    name: fuzz smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal --component clippy,rustfmt,rust-src
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: tools/fuzz
+      - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2.87.17
+        with:
+          tool: cargo-fuzz@0.13.2,cargo-deny
+      - run: cargo +"$FUZZ_TOOLCHAIN" fmt --manifest-path tools/fuzz/Cargo.toml --all --check
+      - run: cargo +"$FUZZ_TOOLCHAIN" clippy --manifest-path tools/fuzz/Cargo.toml --all-targets --locked -- -D warnings
+      - run: cargo deny --manifest-path tools/fuzz/Cargo.toml --locked check
+      # The prebuilt cargo-fuzz is a musl binary and defaults to its own
+      # triple, where the sanitizer cannot link, so the target is explicit.
+      - name: 60 s per target
+        run: |
+          for target in x3dh_bundle x3dh_initial_message ratchet_header ratchet_session; do
+            cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz \
+              --target x86_64-unknown-linux-gnu "$target" -- \
+              -max_total_time=60 -timeout=1
+          done
 
   signatures:
     name: signature-walk

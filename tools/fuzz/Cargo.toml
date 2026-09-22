@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2026 Janier Rodríguez <jrodriguez@virtualcable.es>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+name = "quietwire-fuzz"
+description = "cargo-fuzz targets for the parsers and state machines that read peer input (§17)."
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/janpenitent/quietwire"
+authors = ["Janier Rodríguez <jrodriguez@virtualcable.es>"]
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+
+[lints.rust]
+missing_docs = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+
+[dependencies]
+arbitrary = { version = "=1.4.2", features = ["derive"] }
+libfuzzer-sys = "=0.4.13"
+quietwire-crypto = { path = "../../crates/quietwire-crypto" }
+quietwire-e2e = { path = "../../crates/quietwire-e2e" }
+
+[[bin]]
+name = "x3dh_bundle"
+path = "fuzz_targets/x3dh_bundle.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "x3dh_initial_message"
+path = "fuzz_targets/x3dh_initial_message.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "ratchet_header"
+path = "fuzz_targets/ratchet_header.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "ratchet_session"
+path = "fuzz_targets/ratchet_session.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1
