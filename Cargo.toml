@@ -8,6 +8,7 @@ members = [
     "crates/quietwire-crypto",
     "crates/quietwire-crypto-memtest",
     "crates/quietwire-e2e",
+    "crates/quietwire-fixtures",
     "crates/quietwire-packet",
     "crates/quietwire-route",
     "crates/quietwire-store",
@@ -29,6 +30,7 @@ publish = false
 quietwire-crypto = { path = "crates/quietwire-crypto" }
 quietwire-crypto-memtest = { path = "crates/quietwire-crypto-memtest" }
 quietwire-e2e = { path = "crates/quietwire-e2e" }
+quietwire-fixtures = { path = "crates/quietwire-fixtures" }
 quietwire-packet = { path = "crates/quietwire-packet" }
 quietwire-route = { path = "crates/quietwire-route" }
 quietwire-store = { path = "crates/quietwire-store" }
