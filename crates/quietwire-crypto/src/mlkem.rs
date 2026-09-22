@@ -7,7 +7,7 @@
 use ml_kem::{ml_kem_768, Decapsulate, KeyExport, B32};
 use zeroize::Zeroizing;
 
-use crate::{rng, Error, SecretKey};
+use crate::{rng, stack, Error, SecretKey};
 
 /// Length of an [`EncapsulationKey`] in bytes.
 pub const ENCAPSULATION_KEY_LEN: usize = 1184;
@@ -41,14 +41,14 @@ impl DecapsulationKey {
     /// The public key matching this key.
     #[must_use]
     pub fn encapsulation_key(&self) -> EncapsulationKey {
-        EncapsulationKey(self.expand().encapsulation_key().clone())
+        stack::scrubbed(|| EncapsulationKey(self.expand().encapsulation_key().clone()))
     }
 
     /// The shared key sent in `ciphertext`. A ciphertext that was not produced
     /// for this key yields an unrelated key (implicit rejection), never an error.
     #[must_use]
     pub fn decapsulate(&self, ciphertext: &Ciphertext) -> SecretKey {
-        decapsulate_with(&self.expand(), ciphertext)
+        stack::scrubbed(|| decapsulate_with(&self.expand(), ciphertext))
     }
 
     /// The expanded key is rebuilt per operation so that only the 64-byte
@@ -96,7 +96,7 @@ impl EncapsulationKey {
     pub fn encapsulate(&self) -> Result<(Ciphertext, SecretKey), Error> {
         let mut randomness = Zeroizing::new(B32::default());
         rng::fill(&mut randomness)?;
-        Ok(self.encapsulate_with(&randomness))
+        Ok(stack::scrubbed(|| self.encapsulate_with(&randomness)))
     }
 
     fn encapsulate_with(&self, randomness: &B32) -> (Ciphertext, SecretKey) {

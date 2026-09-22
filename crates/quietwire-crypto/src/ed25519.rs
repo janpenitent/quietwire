@@ -7,7 +7,7 @@
 
 use ed25519_dalek::Signer;
 
-use crate::{Error, SecretKey};
+use crate::{stack, Error, SecretKey};
 
 /// Length of a [`VerifyingKey`] in bytes.
 pub const VERIFYING_KEY_LEN: usize = 32;
@@ -29,13 +29,13 @@ impl SigningKey {
     /// The public key matching this seed.
     #[must_use]
     pub fn verifying_key(&self) -> VerifyingKey {
-        VerifyingKey(self.expanded().verifying_key())
+        stack::scrubbed(|| VerifyingKey(self.expanded().verifying_key()))
     }
 
     /// Signs `message` deterministically.
     #[must_use]
     pub fn sign(&self, message: &[u8]) -> Signature {
-        Signature(self.expanded().sign(message).to_bytes())
+        stack::scrubbed(|| Signature(self.expanded().sign(message).to_bytes()))
     }
 
     /// The seed is expanded per operation so that its hash, which alone

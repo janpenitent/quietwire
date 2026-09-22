@@ -8,7 +8,7 @@ use subtle::ConstantTimeEq;
 use x25519_dalek::X25519_BASEPOINT_BYTES;
 use zeroize::Zeroizing;
 
-use crate::{Error, SecretKey};
+use crate::{stack, Error, SecretKey};
 
 /// Length of a [`PublicKey`] in bytes.
 pub const PUBLIC_KEY_LEN: usize = 32;
@@ -28,10 +28,7 @@ impl PrivateKey {
     /// The public key matching this private key.
     #[must_use]
     pub fn public_key(&self) -> PublicKey {
-        PublicKey(x25519_dalek::x25519(
-            *self.0.expose_secret(),
-            X25519_BASEPOINT_BYTES,
-        ))
+        stack::scrubbed(|| PublicKey(self.scalar_mult(X25519_BASEPOINT_BYTES)))
     }
 
     /// The shared secret with `peer`.
@@ -40,11 +37,17 @@ impl PrivateKey {
     /// [`Error::InvalidPublicKey`] if `peer` is a low-order point, which would
     /// make the shared secret all zero whatever this private key is.
     pub fn diffie_hellman(&self, peer: &PublicKey) -> Result<SecretKey, Error> {
-        let shared = Zeroizing::new(x25519_dalek::x25519(*self.0.expose_secret(), peer.0));
-        if bool::from(shared.ct_eq(&[0; PUBLIC_KEY_LEN])) {
-            return Err(Error::InvalidPublicKey);
-        }
-        Ok(SecretKey::from_array(&shared))
+        stack::scrubbed(|| {
+            let shared = Zeroizing::new(self.scalar_mult(peer.0));
+            if bool::from(shared.ct_eq(&[0; PUBLIC_KEY_LEN])) {
+                return Err(Error::InvalidPublicKey);
+            }
+            Ok(SecretKey::from_array(&shared))
+        })
+    }
+
+    fn scalar_mult(&self, point: [u8; PUBLIC_KEY_LEN]) -> [u8; PUBLIC_KEY_LEN] {
+        x25519_dalek::x25519(*self.0.expose_secret(), point)
     }
 }
 
