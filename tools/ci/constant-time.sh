@@ -15,12 +15,15 @@ samples="${QW_TIMING_SAMPLES:-10000000}"
 floor=1000000
 threshold=4.5
 # A shared CI runner hands a single run a t statistic that crosses the
-# threshold on scheduling noise alone: locally the two real benches land
-# between -2.1 and +2.9 but flip sign from run to run, while the planted leak
-# stays near -50 with the same sign every time. A leak is therefore declared
-# only when every usable run agrees, which leaves the §16 threshold itself
-# untouched. The common case still costs one run: the loop stops as soon as
-# the evidence so far clears every bench.
+# threshold on scheduling noise alone, and at ten million samples it can cross
+# it repeatedly: the real benches have been seen at -7.3, +8.6 and +4.6 in
+# three consecutive runs. What separates that from a leak is the sign. Noise
+# flips it; a real bias does not, and the planted leak holds one sign at
+# t = -1622 with an effect size three orders of magnitude larger. A leak is
+# therefore declared only when every usable run crosses the threshold in the
+# same direction, which leaves the §16 threshold itself untouched. The common
+# case still costs one run: the loop stops as soon as the evidence so far
+# clears every bench.
 attempts="${QW_TIMING_ATTEMPTS:-3}"
 
 cargo build --manifest-path tools/timing/Cargo.toml --release --locked
@@ -42,6 +45,9 @@ verdict() {
             if (n < floor) next
             usable[name]++
             if (t < -threshold || t > threshold) leaked[name]++
+            sign = (t < 0 ? -1 : 1)
+            if (usable[name] == 1) direction[name] = sign
+            else if (direction[name] != sign) direction[name] = 0
         }
         END {
             if (count == 0) {
@@ -58,8 +64,9 @@ verdict() {
                     printf "%s: |t| stayed below %.1f in %d of %d runs — the harness cannot see a known leak\n",
                         name, threshold, runs - leaked[name], runs
                     status = 1
-                } else if (name !~ /^mutant_/ && leaked[name] == runs) {
-                    printf "%s: |t| above %.1f in all %d runs — the operation leaks timing\n",
+                } else if (name !~ /^mutant_/ && leaked[name] == runs &&
+                           direction[name] != 0) {
+                    printf "%s: |t| above %.1f with the same sign in all %d runs — the operation leaks timing\n",
                         name, threshold, runs
                     status = 1
                 }

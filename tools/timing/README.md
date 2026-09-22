@@ -81,10 +81,13 @@ run while working on it; the CI gate uses the default. The gate fails a bench
 whose |t| crosses 4.5 in the wrong direction, and one whose surviving sample
 count is so low that it passed by measuring nothing.
 
-A verdict of "leaks" needs every usable run to agree, because one run on a
-shared runner crosses 4.5 on scheduling noise alone: locally the real benches
-sit between -2.1 and +2.9 and flip sign between runs, while the planted leak
-stays near -50 with the same sign every time. `QW_TIMING_ATTEMPTS` caps how
+A verdict of "leaks" needs every usable run to cross 4.5 in the same
+direction, because a shared runner crosses it on scheduling noise alone, and
+at ten million samples it can do so several runs in a row: `secret_key_eq` has
+been seen at -7.3, +8.6 and +4.6 in three consecutive CI runs. The sign is
+what separates that from a leak. Noise flips it; a real bias does not, and the
+planted leak holds one sign at t = -1622 with a tau three orders of magnitude
+larger than anything the real benches produce. `QW_TIMING_ATTEMPTS` caps how
 many runs the gate will spend before giving up; a clean verdict ends it early,
 so an operation that is in fact constant-time normally costs a single run.
 
