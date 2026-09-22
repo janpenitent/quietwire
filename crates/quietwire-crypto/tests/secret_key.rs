@@ -63,7 +63,7 @@ fn every_key_starts_its_own_16_kib_aligned_page() {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", not(miri)))]
 mod ram_lock {
     use std::{env, fs, process::Command};
 

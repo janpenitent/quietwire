@@ -85,8 +85,12 @@ impl SecretKey {
 }
 
 /// Locking an OS page larger than the dedicated one would also lock, and on
-/// drop unlock, whatever else the allocator put in that page.
+/// drop unlock, whatever else the allocator put in that page. Miri cannot call
+/// `mlock`, so a key it runs is treated like one the OS refused to lock.
 fn lock_in_ram(page: &DedicatedPage) -> Option<region::LockGuard> {
+    if cfg!(miri) {
+        return None;
+    }
     let covers_whole_os_pages = DEDICATED_PAGE_SIZE.is_multiple_of(region::page::size());
     covers_whole_os_pages
         .then(|| region::lock(ptr::from_ref(page), DEDICATED_PAGE_SIZE).ok())

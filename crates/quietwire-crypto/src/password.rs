@@ -119,12 +119,7 @@ mod tests {
 
     use std::fmt::Write;
 
-    use quietwire_crypto_memtest::ScanningAllocator;
-
     use super::*;
-
-    #[global_allocator]
-    static ALLOCATOR: ScanningAllocator = ScanningAllocator::new();
 
     impl KdfParams {
         const fn custom(memory_kib: u32, iterations: u32, parallelism: u32) -> Self {
@@ -187,21 +182,31 @@ mod tests {
         assert!(matches!(result, Err(Error::Kdf)));
     }
 
-    #[test]
-    fn argon2id_wipes_its_working_memory() {
-        const MEMORY_KIB: u32 = 88;
-        let working_memory_bytes = usize::try_from(MEMORY_KIB).unwrap() * 1024;
-        let watch = ALLOCATOR
-            .watch_blocks_of_size(working_memory_bytes)
+    #[cfg(not(miri))]
+    mod working_memory {
+        use quietwire_crypto_memtest::ScanningAllocator;
+
+        use super::*;
+
+        #[global_allocator]
+        static ALLOCATOR: ScanningAllocator = ScanningAllocator::new();
+
+        #[test]
+        fn argon2id_wipes_its_working_memory() {
+            const MEMORY_KIB: u32 = 88;
+            let working_memory_bytes = usize::try_from(MEMORY_KIB).unwrap() * 1024;
+            let watch = ALLOCATOR
+                .watch_blocks_of_size(working_memory_bytes)
+                .unwrap();
+
+            argon2id(
+                b"pw",
+                &Salt::from_bytes([7; SALT_LEN]),
+                &KdfParams::custom(MEMORY_KIB, 1, 1),
+            )
             .unwrap();
 
-        argon2id(
-            b"pw",
-            &Salt::from_bytes([7; SALT_LEN]),
-            &KdfParams::custom(MEMORY_KIB, 1, 1),
-        )
-        .unwrap();
-
-        assert_eq!(watch.unwiped_frees(), 0);
+            assert_eq!(watch.unwiped_frees(), 0);
+        }
     }
 }

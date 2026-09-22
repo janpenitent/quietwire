@@ -8,6 +8,7 @@
 //! Every test watches a secret of its own, so tests running in parallel
 //! threads do not disturb each other.
 
+#![cfg(not(miri))]
 #![allow(missing_docs, clippy::unwrap_used)]
 
 use quietwire_crypto::{
