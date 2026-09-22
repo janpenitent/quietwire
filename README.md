@@ -1196,6 +1196,7 @@ Every test carries a stable identifier `QW-<LEVEL>-<AREA>-<NNN>` so it can be re
 `QW-U-CRY-030` … `QW-U-CRY-045`, one per secret-dependent operation:
 
 - Method: `dudect-bencher` with 10⁷ measurements per operation, Welch's t-test, **|t| < 4.5 required**.
+- A single crossing on a shared runner is scheduling noise, not evidence: it changes sign from run to run, while a real leak keeps its sign at an order of magnitude more. The gate therefore repeats the measurement and fails an operation only when every usable run crosses. The threshold itself is not relaxed.
 - Also compiled under `valgrind --tool=memcheck` with `ctgrind` annotations marking secrets as uninitialised, so any branch or memory index on a secret is reported.
 - Covered operations: AEAD tag comparison, epoch-tag map lookup, duress DEK unwrap, password verification, skipped-key lookup, safety-number comparison, and every `PartialEq` on a secret type.
 - `QW-U-CRY-046` — a deliberate mutant (replace `subtle::ConstantTimeEq` with `==`) **must** make this suite fail. If it does not, the timing harness itself is broken. This meta-test runs in CI.

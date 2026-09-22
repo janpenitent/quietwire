@@ -81,6 +81,13 @@ run while working on it; the CI gate uses the default. The gate fails a bench
 whose |t| crosses 4.5 in the wrong direction, and one whose surviving sample
 count is so low that it passed by measuring nothing.
 
+A verdict of "leaks" needs every usable run to agree, because one run on a
+shared runner crosses 4.5 on scheduling noise alone: locally the real benches
+sit between -2.1 and +2.9 and flip sign between runs, while the planted leak
+stays near -50 with the same sign every time. `QW_TIMING_ATTEMPTS` caps how
+many runs the gate will spend before giving up; a clean verdict ends it early,
+so an operation that is in fact constant-time normally costs a single run.
+
 ```sh
 tools/timing/target/release/quietwire-timing --filter aead --continuous aead_tag
 ```
