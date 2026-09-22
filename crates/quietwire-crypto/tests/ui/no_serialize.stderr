@@ -1,0 +1,143 @@
+error[E0277]: the trait bound `SecretKey: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:16:26
+   |
+16 |     requires_serialize::<SecretKey>();
+   |                          ^^^^^^^^^ the trait `Serialize` is not implemented for `SecretKey`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `SecretKey` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
+
+error[E0277]: the trait bound `PrivateKey: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:17:26
+   |
+17 |     requires_serialize::<PrivateKey>();
+   |                          ^^^^^^^^^^ the trait `Serialize` is not implemented for `PrivateKey`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `PrivateKey` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
+
+error[E0277]: the trait bound `SigningKey: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:18:26
+   |
+18 |     requires_serialize::<SigningKey>();
+   |                          ^^^^^^^^^^ the trait `Serialize` is not implemented for `SigningKey`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `SigningKey` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
+
+error[E0277]: the trait bound `DecapsulationKey: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:19:26
+   |
+19 |     requires_serialize::<DecapsulationKey>();
+   |                          ^^^^^^^^^^^^^^^^ the trait `Serialize` is not implemented for `DecapsulationKey`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `DecapsulationKey` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
+
+error[E0277]: the trait bound `Kek: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:20:26
+   |
+20 |     requires_serialize::<Kek>();
+   |                          ^^^ the trait `Serialize` is not implemented for `Kek`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `Kek` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
+
+error[E0277]: the trait bound `Dek: serde::Serialize` is not satisfied
+  --> tests/ui/no_serialize.rs:21:26
+   |
+21 |     requires_serialize::<Dek>();
+   |                          ^^^ the trait `Serialize` is not implemented for `Dek`
+   |
+   = note: for local types consider adding `#[derive(serde::Serialize)]` to your `Dek` type
+   = note: for types from other crates check whether the crate offers a `serde` feature flag
+   = help: the following other types implement trait `Serialize`:
+             &'a T
+             &'a mut T
+             ()
+             (T,)
+             (T0, T1)
+             (T0, T1, T2)
+             (T0, T1, T2, T3)
+             (T0, T1, T2, T3, T4)
+           and $N others
+note: required by a bound in `requires_serialize`
+  --> tests/ui/no_serialize.rs:13:26
+   |
+13 | fn requires_serialize<T: serde::Serialize>() {}
+   |                          ^^^^^^^^^^^^^^^^ required by this bound in `requires_serialize`
