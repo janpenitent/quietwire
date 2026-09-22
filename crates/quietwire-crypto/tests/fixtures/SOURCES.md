@@ -15,6 +15,7 @@ together.
 | File | Upstream, at commit | SHA-256 |
 |---|---|---|
 | `wycheproof/hkdf_sha512_test.json` | [C2SP/wycheproof `testvectors_v1/`](https://github.com/C2SP/wycheproof/tree/3fa63dd0344abb611f1fb1d77e119938603ea230/testvectors_v1) | `bb9a21f4e86041caf5d7792b030349f8ff289087f195b2fbc0fc0afc39deca6f` |
+| `wycheproof/hmac_sha512_test.json` | same | `b6c90477bdb4a6fc8ee3d1f7b2c0b69a8dfffab34718abaa6cabd71cc2ba1207` |
 | `wycheproof/xchacha20_poly1305_test.json` | same | `a79de072571b90eb40c3a63ce0c7f75dcb4b62323c8870228e1f61dcc61d63a9` |
 | `wycheproof/x25519_test.json` | same | `35c3f5231cf25cc640b524d403461deee9e49441d5d915a3a25b2c8ff5adbe7d` |
 | `wycheproof/ed25519_test.json` | same | `752d2ea7d7c6cf4736381b6cbacb61f8182b126ab7cd9b058f00c50084975536` |
@@ -24,7 +25,8 @@ together.
 | `speccheck/cases.json` | [novifinancial/ed25519-speccheck `cases.json`](https://github.com/novifinancial/ed25519-speccheck/blob/65519336fda78a3d016e947df6d82848aca0c9da/cases.json) | `08e47a36d9aead288664930505584f353fff113ab854f2800db1e4f5b3540450` |
 
 RFC 5869 publishes HKDF vectors for SHA-256 and SHA-1 only, so HKDF-SHA512
-(`QW-U-CRY-006`) is checked against Wycheproof. The BLAKE3 vectors are
+(`QW-U-CRY-006`) is checked against Wycheproof, and so is HMAC-SHA512, the
+Double Ratchet chain function (§5.4). The BLAKE3 vectors are
 available under CC0-1.0, Apache-2.0 or Apache-2.0 WITH LLVM-exception; they are
 used here under CC0-1.0.
 

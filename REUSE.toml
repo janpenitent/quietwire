@@ -40,6 +40,11 @@ SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
+path = "crates/quietwire-e2e/tests/fixtures/derived/*.json"
+SPDX-FileCopyrightText = "2026 Janier Rodríguez <jrodriguez@virtualcable.es>"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
 path = "crates/quietwire-crypto/tests/fixtures/rfc7748/*.json"
 SPDX-FileCopyrightText = "2016 IETF Trust and the persons identified as the document authors"
 SPDX-License-Identifier = "BSD-3-Clause"

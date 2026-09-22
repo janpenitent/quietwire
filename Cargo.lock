@@ -761,6 +761,7 @@ dependencies = [
  "ed25519-dalek",
  "getrandom",
  "hkdf",
+ "hmac",
  "ml-kem",
  "quietwire-crypto-memtest",
  "region",
@@ -785,6 +786,9 @@ name = "quietwire-e2e"
 version = "0.0.0"
 dependencies = [
  "quietwire-crypto",
+ "serde",
+ "serde_json",
+ "zeroize",
 ]
 
 [[package]]

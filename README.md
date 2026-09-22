@@ -1003,12 +1003,12 @@ Then apply the repository settings and rulesets in §19.8, commit `.github/setti
 
 1. `quietwire-crypto`: key hierarchy, Argon2id parameters, HKDF labels, locked and wiped key pages, `Zeroizing` for transient buffers.
 2. `quietwire-e2e`: hybrid X3DH, then the Double Ratchet.
-3. Implement **every** test vector from the Signal specification. Add ML-KEM-768 vectors from NIST FIPS 203.
+3. Pass test vectors for X3DH and the Double Ratchet derived from independent implementations, since Signal publishes none (ADR-0019). Add ML-KEM-768 vectors from NIST FIPS 203.
 4. `cargo fuzz` targets for: cell parsing, ratchet header parsing, X3DH bundle parsing, GCS decoding. Run each for 24 hours minimum.
 5. Property tests with `proptest`: encrypt→decrypt round-trips under arbitrary reordering, arbitrary loss, arbitrary duplication.
 6. Constant-time verification with `dudect-bencher` on every secret-dependent branch.
 
-**Exit criterion:** 100 % of Signal test vectors pass; **24 fuzz-hours per target** with zero crashes, hangs or leaks — not "72 cumulative across all targets", which an earlier draft specified and which is materially weaker than the §17 standard; no non-constant-time operation on secret data; `QW-U-CRY-046`, the meta-test proving the timing harness itself works, passes.
+**Exit criterion:** 100 % of the protocol test vectors pass (ADR-0019); **24 fuzz-hours per target** with zero crashes, hangs or leaks — not "72 cumulative across all targets", which an earlier draft specified and which is materially weaker than the §17 standard; no non-constant-time operation on secret data; `QW-U-CRY-046`, the meta-test proving the timing harness itself works, passes.
 
 **AUD-1, the cryptographic design review, belongs here — at the end of this phase, around week 9.** Scheduling it only at T-12 as the §18.14 calendar implies is a planning error: the protocol is finished at week 8, and a design flaw found at week 40 invalidates every layer built on top of it. The design review runs against `PROTOCOL.md` before the packet, storage and transport layers exist. The later slot in §18.14 is for **re-review of changes**, not first contact.
 
@@ -1183,8 +1183,8 @@ Every test carries a stable identifier `QW-<LEVEL>-<AREA>-<NNN>` so it can be re
 | `QW-U-CRY-008` | Argon2id | RFC 9106 §5.3 |
 | `QW-U-CRY-009` | ML-KEM-768 keygen/encaps/decaps | NIST FIPS 203 ACVP vectors: the 70 ML-KEM-768 keyGen, encapsulation, decapsulation and encapsulationKeyCheck cases (decapsulationKeyCheck does not apply, ADR-0016) |
 | `QW-U-CRY-010` | ML-KEM-768 decapsulation of malformed ciphertext returns implicit-reject, never an error | FIPS 203 §7.3 |
-| `QW-U-E2E-011` | X3DH agreement | Signal spec vectors, extended with our PQ leg |
-| `QW-U-E2E-012` | Double Ratchet message sequence | Signal spec vectors |
+| `QW-U-E2E-011` | X3DH agreement | vectors derived from independent implementations, PQ leg included (ADR-0019) |
+| `QW-U-E2E-012` | Double Ratchet message sequence | vectors derived from independent implementations (ADR-0019) |
 
 #### Argon2 parameter enforcement
 
