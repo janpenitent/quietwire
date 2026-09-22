@@ -59,10 +59,13 @@ jobs:
       - run: cargo +"$FUZZ_TOOLCHAIN" fmt --manifest-path tools/fuzz/Cargo.toml --all --check
       - run: cargo +"$FUZZ_TOOLCHAIN" clippy --manifest-path tools/fuzz/Cargo.toml --all-targets --locked -- -D warnings
       - run: cargo deny --manifest-path tools/fuzz/Cargo.toml --locked check
+      # The prebuilt cargo-fuzz is a musl binary and defaults to its own
+      # triple, where the sanitizer cannot link, so the target is explicit.
       - name: 60 s per target
         run: |
           for target in x3dh_bundle x3dh_initial_message ratchet_header ratchet_session; do
-            cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz "$target" -- \
+            cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz \
+              --target x86_64-unknown-linux-gnu "$target" -- \
               -max_total_time=60 -timeout=1
           done
 

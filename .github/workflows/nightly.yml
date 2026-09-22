@@ -81,8 +81,12 @@ jobs:
           tool: cargo-fuzz@0.13.2
       # §17 asks for 24 h; 6 h is the GitHub-hosted runner cap, so the rest of
       # the budget runs on a self-hosted runner or a developer machine.
+      #
+      # The prebuilt cargo-fuzz is a musl binary and defaults to its own
+      # triple, where the sanitizer cannot link, so the target is explicit.
       - run: |
-          cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz ${{ matrix.target }} -- \
+          cargo +"$FUZZ_TOOLCHAIN" fuzz run --fuzz-dir tools/fuzz \
+            --target x86_64-unknown-linux-gnu ${{ matrix.target }} -- \
             -max_total_time=21000 -timeout=1
       - if: failure()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
