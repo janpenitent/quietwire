@@ -5,3 +5,4 @@
 //! Packet and privacy layer: fixed 512-byte cells, padding, cover traffic, random delay and replay cache.
 
 pub mod cell;
+pub mod payload;
