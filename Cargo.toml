@@ -45,7 +45,7 @@ getrandom = "=0.4.3"
 hkdf = "=0.13.0"
 hmac = { version = "=0.13.0", default-features = false, features = ["zeroize"] }
 ml-kem = { version = "=0.3.2", default-features = false, features = ["hazmat", "zeroize"] }
-region = "=4.0.0"
+region = "=4.0.1"
 sha2 = { version = "=0.11.0", default-features = false, features = ["zeroize"] }
 subtle = "=2.6.1"
 x25519-dalek = { version = "=3.0.0", default-features = false, features = ["precomputed-tables", "zeroize"] }
